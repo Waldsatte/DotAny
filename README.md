@@ -99,8 +99,9 @@ To verify `SHA256SUMS.txt` itself the way the hub does, check its signature with
 minisign -Vm SHA256SUMS.txt -x SHA256SUMS.txt.sig -P RWRTNXn4HhYmDLLt259wSyXBPb3H1itR3a+ApiZcvVPp3uX3J00Rjkca
 ```
 
-Releases built in this repository also include GitHub build provenance:
-`gh attestation verify DotAny-Setup.exe --repo Waldsatte/DotAny` (or `DotAny.dmg`).
+The Windows installer also carries GitHub build provenance:
+`gh attestation verify DotAny-Setup.exe --repo Waldsatte/DotAny`. The macOS package is notarized by Apple:
+`spctl -a -t open --context context:primary-signature -v DotAny.dmg`.
 
 </details>
 

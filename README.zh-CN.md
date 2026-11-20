@@ -90,8 +90,8 @@ DotAny 将 11 款原生工具与 74 种文件格式整合于同一桌面套件�
 minisign -Vm SHA256SUMS.txt -x SHA256SUMS.txt.sig -P RWRTNXn4HhYmDLLt259wSyXBPb3H1itR3a+ApiZcvVPp3uX3J00Rjkca
 ```
 
-由本仓库构建的发布另附 GitHub 构建来源证明：`gh attestation verify DotAny-Setup.exe --repo Waldsatte/DotAny`
-（macOS 版将文件名换为 `DotAny.dmg`）。
+Windows 安装包另附 GitHub 构建来源证明：`gh attestation verify DotAny-Setup.exe --repo Waldsatte/DotAny`。
+macOS 安装包经 Apple 公证：`spctl -a -t open --context context:primary-signature -v DotAny.dmg`。
 
 </details>
 
