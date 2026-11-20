@@ -1,0 +1,29 @@
+[package]
+name = "dotany-words"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.80"
+publish = false
+description = "Word files as DotAny Text reads and writes them, for Text and the hub's converter"
+
+[lib]
+name = "dotany_words"
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+# the .docx package: parts we don't change are copied in their compressed form, the ones we write are deflated. zip 9,
+# the converter's and Sheets'; only deflate here, so Text gets no other compression method
+zip = { version = "9", default-features = false, features = ["deflate-flate2"] }
+# zip's deflate: flate2 on its own default backend, miniz_oxide (the converter's own zip line
+# asks for zlib-rs, which flate2 then prefers there)
+flate2 = "1"
+# the XML parts of a Word file and of an ODT, kept with their exact bytes
+quick-xml = "0.41.0"
+# Word 97–2003 files are compound files
+cfb = "0.14"
+# the code pages of RTF and of old Word files
+encoding_rs = "0.8"
+
+[dev-dependencies]
+# the tests write the blocks as the page gives them, as JSON
+serde_json = "1"

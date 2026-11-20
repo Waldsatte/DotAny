@@ -1,0 +1,50 @@
+[package]
+name = "dotany-archive"
+version = "1.0.0"
+edition = "2021"
+rust-version = "1.87"
+publish = false
+
+[lib]
+name = "dotany_archive_lib"
+crate-type = ["rlib"]
+
+[[bin]]
+name = "dotany-archive"
+path = "src/main.rs"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+# the family's part: atomic saves, settings, the watcher, fonts, the platform layer and the window
+[dependencies]
+dotany-base = { path = "../../shared/rust" }
+tauri = { version = "2", features = [] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+# reading every format: dotany-unpack, the crate the hub's converter reads archives with too. RAR, LHA, cpio and ar are
+# read there by libarchive, built by its build.rs with only those readers
+dotany-unpack = { path = "../../shared/unpack" }
+# writing: zip, 7z (LZMA SDK's algorithms, ported), tar and gzip, all in Rust
+zip = { version = "9", default-features = false, features = ["aes-crypto", "deflate-flate2-zlib-rs", "deflate64", "bzip2", "lzma", "ppmd", "xz", "time"] }
+sevenz-rust2 = { version = "0.24", default-features = false, features = ["aes256", "compress", "bzip2", "deflate", "ppmd", "util"] }
+tar = { version = "0.4", default-features = false }
+flate2 = { version = "1", default-features = false, features = ["zlib-rs"] }
+rfd = { version = "0.15", default-features = false, features = ["common-controls-v6"] }
+
+# the right-click menu (HKCU only), opening a file in its usual program, showing a folder
+[target.'cfg(windows)'.dependencies]
+windows-sys = { version = "0.59", features = ["Win32_Foundation", "Win32_Security", "Win32_System_Registry", "Win32_UI_Shell", "Win32_UI_WindowsAndMessaging"] }
+
+# the Mac (src/platform.rs): Show in Finder with the file chosen, and names composed (NFC).
+# Already in Tauri's tree there
+[target.'cfg(target_os = "macos")'.dependencies]
+objc2-foundation = { version = "0.3", default-features = false, features = ["std", "NSString", "NSArray", "NSURL"] }
+objc2-app-kit = { version = "0.3", default-features = false, features = ["std", "NSWorkspace"] }
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "s"
+panic = "unwind"
+strip = true

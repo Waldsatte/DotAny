@@ -1,0 +1,18 @@
+[package]
+name = "dotany-picture"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.80"
+publish = false
+description = "Pictures as DotAny Image reads them, what they carry besides pixels, and the work on pixels, for Image and the hub's converter"
+
+[lib]
+name = "dotany_picture"
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+# metadata.rs: PNG's compressed chunks (the colour profile in iCCP, XMP in iTXt) and its chunk checksums
+flate2 = "1"
+# ops.rs: resizing, and the pixel loops spread over every core
+fast_image_resize = { version = "6", default-features = false, features = ["std"] }
+rayon = "1"

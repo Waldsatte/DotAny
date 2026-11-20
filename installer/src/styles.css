@@ -1,0 +1,123 @@
+/* DotAny's installer. The colours are the family's light and dark grounds; every shade is the text colour mixed into the
+   ground. Motion is the family's --t-1, --t-2 and --e-out; the three line drawings keep times of their own. Type sizes
+   are the family's. */
+:root {
+  color-scheme: light;
+  --bg: #ECEBE7; --tool: #E2E0DA; --text: #151413; --accent: #FF6A00;
+  --body: color-mix(in srgb, var(--text) 84%, var(--bg));
+  --muted: color-mix(in srgb, var(--text) 56%, var(--bg));
+  --edge: color-mix(in srgb, var(--text) 11%, var(--bg));
+  --hover: color-mix(in srgb, var(--text) 9%, var(--bg));
+  --sub: color-mix(in srgb, var(--text) 26%, var(--bg));
+  --font-text: "Stack Sans Text", "HarmonyOS Sans SC", "Microsoft YaHei UI", system-ui, sans-serif;
+  --font-display: "Stack Sans Headline", "Stack Sans Text", "HarmonyOS Sans SC", "Microsoft YaHei UI", sans-serif;
+  --e-out: cubic-bezier(.2, .7, .2, 1); --t-1: 140ms; --t-2: 240ms; --t-3: 420ms;
+}
+/* Traditional Chinese, Japanese and Korean in their own fonts, as shared/web/family.css has them */
+:root:lang(zh-Hant) { --font-text: "Stack Sans Text", "HarmonyOS Sans TC", "Microsoft JhengHei UI", "HarmonyOS Sans SC", system-ui, sans-serif; --font-display: "Stack Sans Headline", "Stack Sans Text", "HarmonyOS Sans TC", "Microsoft JhengHei UI", "HarmonyOS Sans SC", sans-serif; }
+:root:lang(ja) { --font-text: "Stack Sans Text", "Noto Sans JP DotAny", "Yu Gothic UI", "HarmonyOS Sans SC", system-ui, sans-serif; --font-display: "Stack Sans Headline", "Stack Sans Text", "Noto Sans JP DotAny", "Yu Gothic UI", "HarmonyOS Sans SC", sans-serif; }
+:root:lang(ko) { --font-text: "Stack Sans Text", "Pretendard", "Malgun Gothic", "HarmonyOS Sans SC", system-ui, sans-serif; --font-display: "Stack Sans Headline", "Stack Sans Text", "Pretendard", "Malgun Gothic", "HarmonyOS Sans SC", sans-serif; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  color-scheme: dark; --bg: #161616; --tool: #232323; --text: #E6E6E6; --accent: #FF6A00;
+} }
+:root[data-theme="dark"] { color-scheme: dark; --bg: #161616; --tool: #232323; --text: #E6E6E6; --accent: #FF6A00; }
+:root[data-theme="light"] { color-scheme: light; --bg: #ECEBE7; --tool: #E2E0DA; --text: #151413; --accent: #FF6A00; }
+
+html, body { height: 100%; margin: 0; overflow: hidden; }
+body { background: var(--bg); color: var(--text); font-family: var(--font-text); font-size: 13px; line-height: 1.3; -webkit-user-select: none; user-select: none; cursor: default; }
+[hidden] { display: none !important; }
+button { font: inherit; }
+svg { fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+
+.win { box-sizing: border-box; width: 100%; height: 100%; display: flex; flex-direction: column; overflow: hidden; background: var(--bg); color: var(--text); }
+
+/* the top line: the name in type, and the two window buttons */
+.top { height: 44px; flex: none; display: flex; align-items: center; justify-content: space-between; padding: 0 6px 0 22px; }
+.brand { font-family: var(--font-display); font-size: 15px; font-weight: 600; line-height: 1.2; color: var(--text); }
+.wbs { display: flex; gap: 2px; }
+.wb { width: 44px; height: 32px; display: grid; place-items: center; border: 0; border-radius: 7px; background: transparent; color: var(--muted); padding: 0; }
+.wb svg { width: 14px; height: 14px; }
+
+/* the buttons: hover changes colour, a press shrinks to .98 */
+.b { transition: background-color var(--t-1) var(--e-out), color var(--t-1) var(--e-out), transform var(--t-1) var(--e-out); }
+.b:active { transform: scale(.98); }
+.ghost:hover { background: var(--hover) !important; color: var(--text) !important; }
+.big-btn { height: 40px; padding: 0 22px; border: 0; border-radius: 10px; font-size: 13px; font-weight: 500; cursor: pointer; }
+.pri { background: var(--text); color: var(--bg); }
+.pri:hover { background: var(--body); }
+.soft { background: var(--hover); color: var(--text); }
+.soft:hover { background: var(--edge); }
+.big-btn > span { display: inline-block; }
+
+/* the page: the old one fades out (--t-1), the new one in (--t-2) */
+.body { flex: 1; min-height: 0; display: flex; flex-direction: column; padding: 14px 40px 32px; opacity: 1; transition: opacity var(--t-2) var(--e-out); }
+.body.leaving { opacity: 0; transition-duration: var(--t-1); }
+section { flex: 1; display: flex; flex-direction: column; }
+h1 { margin: 0; font-family: var(--font-display); font-size: 24px; font-weight: 600; line-height: 1.2; }
+.foot { margin-top: auto; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.foot.end { justify-content: flex-end; }
+.btns { display: flex; gap: 8px; }
+.need { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.num, .pct { font-variant-numeric: tabular-nums; }
+
+/* step 1: the two cards; the chosen one turns dark where it is */
+.label { margin: 32px 0 0; font-size: 12px; color: var(--muted); }
+.label.first { margin: 32px 0 10px; }
+.modes { position: relative; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; height: 148px; }
+.card { box-sizing: border-box; border: 1px solid var(--edge); background: transparent; color: var(--text); text-align: left; cursor: pointer; transition: background-color var(--t-2) var(--e-out), color var(--t-2) var(--e-out), border-color var(--t-2) var(--e-out), transform var(--t-1) var(--e-out); }
+.card[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.card[aria-pressed="false"]:hover { border-color: var(--muted); }
+.card .sub { font-size: 12px; color: var(--muted); transition: color var(--t-2) var(--e-out); }
+.card[aria-pressed="true"] .sub { color: var(--sub); }
+.mode { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: flex-start; padding: 20px 22px; border-radius: 10px; }
+.mode .big { margin-top: auto; font-family: var(--font-display); font-size: 17px; font-weight: 600; }
+.mode .note { margin-top: 6px; }
+.where { display: flex; align-items: center; gap: 10px; height: 40px; border-bottom: 1px solid var(--edge); }
+.where > svg { width: 18px; height: 18px; flex: none; stroke: var(--muted); }
+.path { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.change { height: 28px; padding: 0 8px; margin-right: -8px; border: 0; border-radius: 7px; background: transparent; color: var(--muted); font-size: 12px; cursor: pointer; }
+
+/* step 2: twelve cards, four to a row; the hub is always in */
+.tools { margin-top: 28px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.tool { height: 72px; display: flex; flex-direction: column; justify-content: space-between; padding: 12px; border-radius: 10px; }
+.tool.fixed { cursor: default; }
+.tool > span { display: flex; justify-content: space-between; align-items: flex-start; }
+.tool svg { width: 18px; height: 18px; }
+.tool b { font-weight: 500; }
+
+/* step 3: the tool being installed, the family's 2px line with the orange mark at its front, and the list */
+.now { margin-top: 32px; display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
+.pct { font-size: 12px; color: var(--muted); }
+.line { position: relative; height: 2px; margin-top: 12px; border-radius: 1px; background: var(--edge); overflow: hidden; }
+.line > i { position: absolute; left: 0; top: 0; bottom: 0; width: 0; background: var(--text); transition: width var(--t-2) var(--e-out); }
+.line > i > i { position: absolute; right: 0; top: 0; bottom: 0; width: 2px; background: var(--accent); }
+.rows { margin-top: 24px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 32px; }
+.row { display: flex; align-items: center; justify-content: space-between; height: 30px; border-bottom: 1px solid var(--edge); color: var(--muted); transition: color var(--t-2) var(--e-out); }
+.row.on { color: var(--text); }
+.tick { width: 14px; height: 14px; }
+.tick path { stroke-dasharray: 24; stroke-dashoffset: 24; animation: draw 360ms var(--e-out) forwards; }
+@keyframes draw { to { stroke-dashoffset: 0; } }
+
+/* step 4: the circle drawn clockwise from the top, then the tick */
+.title { display: flex; align-items: center; gap: 10px; }
+.seal { width: 24px; height: 24px; flex: none; stroke: var(--text); }
+.seal circle { stroke-dasharray: 63; stroke-dashoffset: 63; animation: draw 520ms var(--e-out) 120ms forwards; }
+.seal path { stroke-dasharray: 12; stroke-dashoffset: 12; animation: draw 280ms var(--e-out) 560ms forwards; }
+.line-note { margin: 10px 0 0; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.shelf { margin-top: 24px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0 16px; }
+.shelf > span { display: flex; align-items: center; gap: 10px; height: 34px; }
+.shelf svg { width: 18px; height: 18px; flex: none; stroke: var(--muted); }
+.switch { margin-top: 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 0; border: 0; border-top: 1px solid var(--edge); background: transparent; color: var(--text); text-align: left; cursor: pointer; }
+.sw-words { display: grid; gap: 5px; }
+.sw-words b { font-size: 13px; font-weight: 500; }
+.sw-words small { font-size: 12px; color: var(--muted); }
+.track { position: relative; flex: none; width: 34px; height: 20px; border-radius: 10px; background: var(--edge); transition: background-color var(--t-2) var(--e-out); }
+.knob { position: absolute; left: 2px; top: 2px; width: 16px; height: 16px; border-radius: 50%; background: var(--bg); transition: transform var(--t-2) var(--e-out); }
+.switch[aria-checked="true"] .track { background: var(--text); }
+.switch[aria-checked="true"] .knob { transform: translateX(14px); }
+
+/* keyboard focus: the family's ring (shared/web/family.css) */
+button:focus { outline: none; }
+button:focus-visible { outline: 1px solid var(--accent); outline-offset: 2px; }
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } .tick path, .seal circle, .seal path { stroke-dashoffset: 0; } }

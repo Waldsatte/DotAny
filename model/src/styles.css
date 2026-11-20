@@ -1,0 +1,87 @@
+/* DotAny 3D: this tool's own sheet, after the family's (shared/web/family.css): the stage, the dock's choices, the
+   measuring marks and the list of parts. Colours and motion come from the family's variables, and sizes from the
+   family's type scale. */
+
+/* the stage: the model stands on the family's page, under the family's glass */
+.stage { top: 0; overflow: hidden; outline: 0; }
+.m-canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; cursor: grab; touch-action: none; }
+.m-canvas:active { cursor: grabbing; }
+.measuring .m-canvas, .measuring .m-canvas:active { cursor: crosshair; }
+.m-fade { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+
+/* measuring marks: lines drawn in the page, so they stay thin at any size; numbers on small glass signs */
+.m-over { position: absolute; inset: 0; pointer-events: none; z-index: 2; overflow: hidden; }
+.m-svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.m-edge { stroke: var(--text); stroke-width: 1; stroke-opacity: .5; }
+.m-dist { stroke: var(--text); stroke-width: 1.5; }
+.m-dist.live { stroke: var(--accent); stroke-dasharray: 4 4; }
+.m-pt { fill: var(--text); stroke: var(--bg); stroke-width: 2; }
+.m-pt.live { fill: var(--accent); }
+.m-label { position: absolute; left: 0; top: 0; padding: 3px 7px; border-radius: 6px; font-size: 12px; line-height: 1.2; white-space: nowrap; font-variant-numeric: tabular-nums; color: var(--text); background: var(--glass-float); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); box-shadow: 0 0 0 1px var(--glass-edge); transition: color var(--t-1) var(--e-out); }
+
+/* the dock: rows rise above it when there's more to do */
+/* as wide as its widest row (up to the family's max-width): placed at left 50%, it would otherwise stop at half the window */
+.pill.m-dock { flex-direction: column; align-items: stretch; width: max-content; }
+@media (max-width: 640px) { .pill.m-dock { width: auto; } }
+.pill-row { display: flex; align-items: center; gap: 2px; min-width: 0; height: 40px; }
+.m-row { gap: 6px; padding: 0 4px 8px; }
+.m-row[hidden] { display: none; }
+/* the display-mode choice on its own row when the dock's one row doesn't fit (main.js fitMode) */
+.m-mode { justify-content: center; }
+.seg.m-pick { display: flex; }
+.seg.m-pick .sg { min-width: 0; padding: 0 12px; white-space: nowrap; }
+.seg.m-pick .pl { top: 0; left: 0; }
+/* the dock's choices: Archive's compression chips, no grey ground; the dark block still slides */
+.pill .seg.m-pick { flex: none; display: grid; grid-auto-flow: column; grid-auto-columns: minmax(40px, 1fr); gap: 4px; padding: 0; background: none; border-radius: 0; }
+.pill .seg.m-pick .pl { border-radius: 7px; }
+#measureBtn, #sectionBtn { height: 30px; border-radius: 7px; }
+.pill .seg.m-pick .sg { height: 30px; border-radius: 7px; font-size: 12px; font-weight: 500; line-height: 1; transition: background-color var(--t-1) var(--e-out), color var(--t-1) var(--e-out); }
+.pill .seg.m-pick .sg:not([aria-pressed="true"]):hover { background: var(--glass-hover); color: var(--text); }
+.pill .tb[aria-pressed="true"], .pill .tb[aria-pressed="true"]:hover { background: var(--text); color: var(--bg); }
+.m-num { flex: none; font-size: 13px; line-height: 1; color: var(--text); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.m-range { flex: 1; min-width: 140px; height: 24px; margin: 0 4px; background: transparent; -webkit-appearance: none; appearance: none; cursor: pointer; --p: 50%; }
+.m-range:focus { outline: 0; }
+.m-range::-webkit-slider-runnable-track { height: 2px; border-radius: 1px; background: linear-gradient(to right, var(--text) var(--p), var(--glass-edge) var(--p)); }
+.m-range::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; margin-top: -6px; border-radius: 50%; background: var(--text); border: 2px solid var(--bg); box-sizing: border-box; transition: transform var(--t-1) var(--e-out); }
+.m-range:active::-webkit-slider-thumb { transform: scale(1.18); }
+.m-range:focus-visible { outline: 1px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+.m-time { padding: 0 4px; }
+.m-track { position: relative; flex: 1; min-width: 180px; height: 24px; cursor: pointer; touch-action: none; }
+.m-track::before { content: ""; position: absolute; left: 0; right: 0; top: 11px; height: 2px; border-radius: 1px; background: var(--glass-edge); }
+.m-fill { position: absolute; left: 0; top: 11px; height: 2px; width: 0; border-radius: 1px; background: var(--text); }
+.m-head { position: absolute; left: 0; top: 4px; width: 2px; height: 16px; margin-left: -1px; background: var(--accent); }
+.m-clip { flex: none; width: auto; padding: 0 10px; font-size: 13px; font-weight: 400; white-space: nowrap; }
+.m-clip[hidden] { display: none; }
+
+/* the panels: DotAny Image's, with the parts list and the facts */
+.side-wide { width: 100%; justify-content: center; }
+.m-fold { display: block; } .m-fold[hidden] { display: none; } .m-in { padding-top: 10px; }
+.side-body:has(.part-list) { gap: 0; }
+.side .seg.m-pick { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); }
+.side .seg.m-pick .sg { padding: 0 2px; }
+/* the selected row of a list: a dark block that slides between the rows */
+.part-list { position: relative; display: grid; gap: 2px; margin: 0 -6px; }
+.list-pl { position: absolute; left: 0; right: 0; top: 0; border-radius: 7px; background: var(--text); opacity: 0; pointer-events: none; transition: transform var(--t-3) var(--e-out), height var(--t-3) var(--e-out), opacity var(--t-1) var(--e-out); }
+.part-row { position: relative; z-index: 1; display: flex; align-items: center; gap: 4px; width: 100%; height: 32px; padding: 0 6px; border-radius: 7px; font-size: 13px; color: var(--text); text-align: left; transition: color var(--t-2) var(--e-out), background-color var(--t-1) var(--e-out); }
+.part-row:hover { background: var(--glass-hover); }
+.part-row[aria-pressed="true"], .part-row[aria-pressed="true"]:hover { background: transparent; color: var(--bg); }
+.part-row.off .part-n { opacity: .42; }
+.part-n { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; transition: opacity var(--t-2) var(--e-out); }
+.part-a { flex: none; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 5px; font-style: normal; opacity: 0; transition: opacity var(--t-1) var(--e-out), background-color var(--t-1) var(--e-out); }
+.part-a svg.i { width: 18px; height: 18px; }
+.part-row:hover .part-a, .part-row.off .part-eye { opacity: 1; }
+.part-a:hover { background: color-mix(in srgb, currentColor 16%, transparent); }
+/* a row's tips sit above it, so the hidden ones under the last row never make the panel scroll */
+.part-a[data-tip]::after { top: auto; bottom: calc(100% + 8px); transform: translate(-50%, 3px); }
+.part-a[data-tip]:hover::after { transform: translate(-50%, 0); }
+.info-list { display: grid; margin: 0; }
+.info-list div { display: flex; justify-content: space-between; gap: 16px; padding: 8px 0; border-top: 1px solid var(--glass-edge); font-size: 12px; line-height: 1.4; }
+.info-list div:first-child { border-top: 0; padding-top: 0; }
+.info-list dt { flex: none; color: var(--muted); }
+.info-list dd { margin: 0; min-width: 0; text-align: right; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
+
+@media (max-width: 720px) {
+  .pill [data-tip]::after { display: none; }
+  .seg.m-pick .sg { padding: 0 8px; }
+  .m-track, .m-range { min-width: 80px; }
+}

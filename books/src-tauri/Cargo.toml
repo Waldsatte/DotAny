@@ -1,0 +1,40 @@
+[package]
+name = "dotany-books"
+version = "1.0.0"
+edition = "2021"
+rust-version = "1.80"
+publish = false
+
+[lib]
+name = "dotany_books_lib"
+crate-type = ["rlib"]
+
+[[bin]]
+name = "dotany-books"
+path = "src/main.rs"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+# the family's part: atomic saves, settings, the watcher, fonts, the platform layer and the window
+[dependencies]
+dotany-base = { path = "../../shared/rust" }
+tauri = { version = "2", features = [] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+# reading EPUB and CBZ far enough to find a lock; deflate only, no encryption support compiled in
+zip = { version = "2", default-features = false, features = ["deflate"] }
+# CB7 comics: reading only, LZMA and LZMA2 as 7-Zip writes them. No password support, no other codecs, no writer; the
+# same library DotAny Archive uses
+sevenz-rust2 = { version = "0.24", default-features = false }
+
+# the tests write 7z with the same library's writer; resolver 2 keeps this out of the program itself
+[dev-dependencies]
+sevenz-rust2 = { version = "0.24", default-features = false, features = ["compress"] }
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "s"
+panic = "unwind"
+strip = true

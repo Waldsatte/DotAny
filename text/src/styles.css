@@ -1,0 +1,350 @@
+/* every font ships in the program; nothing is fetched */
+@font-face { font-family: "JetBrains Mono"; src: url("fonts/JetBrainsMono-wght.ttf") format("truetype"); font-weight: 100 800; font-display: block; }
+@font-face { font-family: "Unscii 16"; src: url("fonts/unscii-16.woff") format("woff"); font-display: block; }
+/* what a page normally gets from its surroundings */
+/* Layout: the whole window is one colour and the words sit straight on it; in page view the same column gains A4 sheets. */
+:root {
+  --bg: #ECEBE7; --tool: #E2E0DA; --text: #151413; --accent: #FF6A00;
+  --c-gray: #75716B; --c-red: #B3261E; --c-blue: #1F4FA8; --c-green: #2C6E49;
+  --muted: color-mix(in srgb, var(--text) 56%, var(--bg));
+  --body: color-mix(in srgb, var(--text) 84%, var(--bg));
+  --sel: color-mix(in srgb, var(--text) 15%, var(--bg));
+  --font-text: "Stack Sans Text", "HarmonyOS Sans SC", "Microsoft YaHei UI", system-ui, sans-serif;
+  --font-display: "Stack Sans Headline", "Stack Sans Text", "HarmonyOS Sans SC", "Microsoft YaHei UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, Consolas, "HarmonyOS Sans SC", "Microsoft YaHei UI", monospace;
+  --e-out: cubic-bezier(.2, .7, .2, 1); --t-1: 140ms; --t-2: 240ms; --t-3: 420ms;
+  --gutter-l: max(16px, env(safe-area-inset-left, 0px)); --gutter-r: max(16px, env(safe-area-inset-right, 0px));
+  /* frosted glass: one material for everything that floats over the words */
+  --glass: color-mix(in srgb, var(--bg) 50%, transparent);
+  --glass-float: color-mix(in srgb, var(--bg) 58%, transparent);
+  --glass-blur: blur(22px) saturate(1.5);
+  --glass-edge: color-mix(in srgb, var(--text) 11%, transparent);
+  --glass-hover: color-mix(in srgb, var(--text) 9%, transparent);
+  --glass-shadow: 0 10px 30px color-mix(in srgb, #000 16%, transparent);
+  --chrome-h: 102px;
+}
+/* code keeps JetBrains Mono first in every language; the characters after it as family.css has them per language */
+:root:lang(zh-Hant) { --font-mono: "JetBrains Mono", ui-monospace, Consolas, "HarmonyOS Sans TC", "Microsoft JhengHei UI", "PingFang TC", "HarmonyOS Sans SC", monospace; }
+:root:lang(ja) { --font-mono: "JetBrains Mono", ui-monospace, Consolas, "Noto Sans JP DotAny", "Yu Gothic UI", "Hiragino Sans", "HarmonyOS Sans SC", monospace; }
+:root:lang(ko) { --font-mono: "JetBrains Mono", ui-monospace, Consolas, "Pretendard", "Malgun Gothic", "Apple SD Gothic Neo", "HarmonyOS Sans SC", monospace; }
+
+/* the top of the window is one sheet of glass, and the words scroll underneath it */
+
+/* the top line: which file, how long it is, and the two switches */
+.count { margin-right: 8px; }
+
+/* save as: the same glass, the same sliding pill */
+.count, .state { font-size: 13px; line-height: 1; color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
+
+/* the bar: paragraph styles on a track whose pill slides, then the groups */
+.bar { flex: none; position: relative; z-index: 5; display: flex; align-items: center; justify-content: center; gap: 2px; height: 48px; padding-left: var(--gutter-l); padding-right: var(--gutter-r); }
+.seg .sg[data-k="p"] { padding-top: 1px; }
+.grp { display: flex; gap: 2px; flex: none; }
+.tb .sw { width: 10px; height: 10px; border-radius: 50%; background: currentColor; }
+svg.i .dt { stroke-width: 3; }
+
+/* a small menu that rises from its button */
+.pop .sw { width: 11px; height: 11px; border-radius: 50%; border: 1px solid var(--glass-edge); }
+
+/* the top line's names: they fold away into the icon when put away in settings */
+
+/* settings: a glass panel, a page for each subject */
+
+/* which buttons belong to which kind of file */
+.code-only, .json-only { display: none !important; }
+.code .code-only { display: inline-flex !important; }
+.code .json-only { display: none !important; }
+.code.json-file .json-only { display: inline-flex !important; }
+.code .doc-only { display: none !important; }
+.code .bar, .code .scroll { display: none; }
+
+/* code: the same window, a mono face, one ink in several tones */
+:root { --code-soft: color-mix(in srgb, var(--text) 68%, var(--bg)); --code-faint: color-mix(in srgb, var(--text) 44%, var(--bg)); --status-h: 30px; --tree-w: 272px; --head-h: 53px; }
+.codehost { display: none; position: absolute; inset: 0; transition: right var(--t-3) var(--e-out); }
+.code .codehost { display: block; animation: fade-in var(--t-2) var(--e-out); }
+.tree-on .codehost { right: var(--tree-w); }
+.codehost .cm-editor { height: 100%; background: transparent; color: var(--text); }
+.codehost .cm-editor.cm-focused { outline: none; }
+.codehost .cm-scroller { padding-block: var(--head-h) var(--status-h); font-family: var(--font-mono); font-size: 14px; line-height: 1.65; font-variant-ligatures: none; scrollbar-width: thin; scrollbar-color: var(--tool) transparent; overflow: auto; }
+.codehost .cm-content { padding-block: 16px 40vh; caret-color: transparent; }
+.codehost .cm-line { padding: 0 24px 0 6px; }
+.codehost .cm-gutters { background: transparent; border: 0; color: var(--code-faint); font-size: 12px; font-variant-numeric: tabular-nums; }
+.codehost .cm-lineNumbers .cm-gutterElement { min-width: 30px; padding: 0 2px 0 18px; }
+.codehost .cm-activeLine { background: color-mix(in srgb, var(--text) 4%, transparent); }
+.codehost .cm-activeLineGutter { background: transparent; color: var(--text); }
+.codehost .cm-foldGutter .cm-gutterElement { display: flex; align-items: center; justify-content: center; width: 18px; cursor: pointer; }
+.cm-foldm { display: grid; place-items: center; color: var(--code-faint); opacity: 0; transition: opacity var(--t-1) var(--e-out), transform var(--t-2) var(--e-out); }
+.cm-foldm svg.i { width: 14px; height: 14px; }
+.cm-foldm.open { transform: rotate(90deg); }
+.cm-foldm:not(.open) { opacity: 1; }
+.codehost .cm-gutters:hover .cm-foldm { opacity: 1; }
+.codehost .cm-foldPlaceholder { padding: 0 6px; margin: 0 2px; border: 0; border-radius: 4px; background: var(--tool); color: var(--muted); }
+.codehost .cm-cursor-primary { display: none !important; }
+.cm-dcaret { position: absolute; left: 0; top: 0; z-index: 200; width: 2px; margin-left: -1px; border-radius: 1px; background: var(--accent); pointer-events: none; will-change: transform; }
+.cm-dcaret.is-off { opacity: 0; }
+.cm-dcaret.is-blink { animation: blink 1.06s linear infinite; }
+.measuring .inkfall-fresh { top: 0 !important; }
+.codehost .cm-selectionBackground, .codehost .cm-focused > .cm-scroller > .cm-selectionLayer .cm-selectionBackground { background: var(--sel) !important; transition: left 90ms var(--e-out), top 90ms var(--e-out), width 90ms var(--e-out), height 90ms var(--e-out); border-radius: 2px; }
+.codehost .cm-matchingBracket, .codehost .cm-focused .cm-matchingBracket { background: var(--sel); color: var(--text); font-weight: 500; outline: 0; }
+.codehost .cm-nonmatchingBracket { background: transparent; color: var(--c-red) !important; }
+.codehost .cm-selectionMatch { background: color-mix(in srgb, var(--text) 9%, transparent); border-radius: 2px; }
+.codehost .cm-searchMatch { background: color-mix(in srgb, var(--text) 12%, transparent); outline: 0; border-radius: 2px; }
+.codehost .cm-searchMatch-selected { background: var(--text); color: var(--bg); }
+.codehost .cm-searchMatch-selected * { color: var(--bg) !important; }
+.codehost .cm-panels { display: none; }
+.codehost .cm-lintRange-error { background: none; text-decoration: underline wavy var(--c-red) 1px; text-underline-offset: 3px; padding: 0; }
+.cm-tooltip.cm-tooltip-lint { padding: 6px 10px; border: 1px solid var(--glass-edge); border-radius: 8px; background: var(--bg); color: var(--text); box-shadow: var(--glass-shadow); font-family: var(--font-text); font-size: 12px; line-height: 1.5; }
+.cm-tooltip-lint .cm-diagnostic { padding: 0; border: 0; }
+
+/* the line below: position and file facts, on the same glass as the top */
+.cstatus { display: none; position: absolute; inset: auto 0 0; z-index: 5; box-sizing: border-box; height: var(--status-h); padding-left: var(--gutter-l); padding-right: max(8px, var(--gutter-r)); align-items: center; justify-content: space-between; gap: 16px; background: var(--glass); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); border-top: 1px solid var(--glass-edge); font-size: 12px; line-height: 1; color: var(--muted); }
+.code .cstatus { display: flex; }
+.cs-l { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.cs-r { display: flex; align-items: center; gap: 2px; flex: none; }
+.cs-valid { flex: none; display: inline-flex; align-items: center; gap: 6px; height: 22px; padding: 0 2px; cursor: default; color: var(--muted); }
+.cs-valid::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--code-faint); transition: background-color var(--t-1) var(--e-out); }
+.cs-valid.bad { color: var(--c-red); cursor: pointer; }
+.cs-valid.bad::before { background: var(--c-red); }
+.cs-path { display: flex; align-items: center; gap: 2px; min-width: 0; overflow: hidden; white-space: nowrap; font-family: var(--font-mono); font-size: 11px; }
+.cs-sep { font-style: normal; color: var(--code-faint); }
+.cs-crumb { padding: 3px 4px; border-radius: 4px; transition: background-color var(--t-1) var(--e-out), color var(--t-1) var(--e-out); }
+.cs-crumb:hover { background: var(--glass-hover); color: var(--text); }
+.cs-b, .cs-lang { display: inline-flex; align-items: center; height: 22px; padding: 0 7px; border-radius: 5px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.cs-b { transition: background-color var(--t-1) var(--e-out), color var(--t-1) var(--e-out); }
+.cs-b:hover { background: var(--glass-hover); color: var(--text); }
+
+/* outline: the shape of the file, beside it */
+.ctree { display: none; position: absolute; top: var(--head-h); right: 0; bottom: var(--status-h); z-index: 4; box-sizing: border-box; width: var(--tree-w); flex-direction: column; border-left: 1px solid var(--glass-edge); transform: translateX(100%); opacity: 0; transition: transform var(--t-3) var(--e-out), opacity var(--t-2) var(--e-out); }
+.code.json-file .ctree { display: flex; }
+.tree-on .ctree { transform: none; opacity: 1; }
+.ct-head { flex: none; padding: 16px 16px 8px; font-family: var(--font-display); font-size: 13px; font-weight: 600; line-height: 1.2; }
+.ct-list { flex: 1; min-height: 0; overflow: auto; padding: 0 8px 16px; scrollbar-width: thin; scrollbar-color: var(--tool) transparent; }
+.ct-row { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; width: 100%; box-sizing: border-box; padding: 4px 8px; border-radius: 6px; font-size: 12px; line-height: 1.5; transition: background-color var(--t-1) var(--e-out); }
+.ct-row:hover { background: var(--glass-hover); }
+.ct-row.on { background: var(--text); color: var(--bg); }
+.ct-k { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; }
+.ct-k.idx { font-weight: 400; color: var(--muted); font-variant-numeric: tabular-nums; }
+.ct-row.on .ct-k.idx, .ct-row.on .ct-v { color: color-mix(in srgb, var(--bg) 72%, var(--text)); }
+.ct-v { flex: none; max-width: 52%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
+
+/* find: glass that floats at the top right of the text */
+.cfind { position: absolute; top: calc(var(--head-h) + 10px); right: 16px; z-index: 6; box-sizing: border-box; width: min(480px, calc(100% - 32px)); padding: 6px; border-radius: 12px; background: var(--glass-float); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-edge); box-shadow: var(--glass-shadow); color: var(--text); opacity: 0; pointer-events: none; transform: translateY(-6px) scale(.98); transform-origin: 100% 0; transition: opacity var(--t-1) var(--e-out), transform var(--t-2) var(--e-out); }
+.cfind.on { opacity: 1; pointer-events: auto; transform: none; }
+.tree-on .cfind { right: calc(var(--tree-w) + 16px); }
+.f-row { display: flex; align-items: center; gap: 2px; }
+.fi { position: relative; flex: 1; min-width: 40px; height: 28px; font-size: 13px; }
+.fi input { box-sizing: border-box; display: block; width: 100%; height: 100%; padding: 0 6px; border: 0; outline: 0; background: transparent; color: var(--text); font: inherit; caret-color: var(--accent); }
+.fi input::placeholder { color: var(--code-faint); }
+.f-count { flex: none; padding: 0 6px; font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.cfind.none .f-count { color: var(--c-red); }
+.f-b { flex: none; position: relative; width: 28px; height: 28px; display: grid; place-items: center; border-radius: 6px; color: var(--muted); transition: background-color var(--t-1) var(--e-out), color var(--t-1) var(--e-out), transform var(--t-2) var(--e-out); }
+.f-b:hover { background: var(--glass-hover); color: var(--text); }
+.f-b[aria-pressed="true"] { background: var(--text); color: var(--bg); }
+.f-more[aria-pressed="true"] { background: transparent; color: var(--text); transform: rotate(90deg); }
+.f-repbox { display: grid; grid-template-rows: 0fr; transition: grid-template-rows var(--t-3) var(--e-out); }
+.cfind.rep .f-repbox { grid-template-rows: 1fr; }
+.f-rep { min-height: 0; overflow: hidden; padding-left: 30px; gap: 4px; }
+.cfind.rep .f-rep { padding-top: 2px; }
+.f-t.btn { height: 26px; padding: 0 9px; font-size: 12px; flex: none; }
+
+/* go to a line */
+.cgoto { position: absolute; right: 16px; bottom: calc(var(--status-h) + 8px); z-index: 6; display: flex; align-items: center; gap: 4px; width: 170px; padding: 4px 10px 4px 4px; border-radius: 10px; background: var(--glass-float); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-edge); box-shadow: var(--glass-shadow); color: var(--text); opacity: 0; pointer-events: none; transform: translateY(6px) scale(.98); transform-origin: 100% 100%; transition: opacity var(--t-1) var(--e-out), transform var(--t-2) var(--e-out); }
+.cgoto.on { opacity: 1; pointer-events: auto; transform: none; }
+.go-hint { flex: none; font-size: 12px; color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
+
+/* the column: 640px in both views, so switching to pages never rewraps a line */
+.scroll { position: absolute; inset: 0; overflow: auto; scrollbar-width: thin; scrollbar-color: var(--tool) transparent; transition: background-color var(--t-3) var(--e-out); }
+/* Text's stage is the page inside the scroller, not the family's stage over the whole window (shared/web/family.css),
+   so none of that one's placing applies */
+.stage { position: relative; box-sizing: border-box; width: 794px; max-width: 100%; margin: 0 auto; padding: calc(var(--chrome-h) + 56px) max(20px, min(77px, calc((100% - 640px) / 2))) 38vh; transition: padding var(--t-3) var(--e-out), margin var(--t-3) var(--e-out), background-color var(--t-3) var(--e-out); }
+.scroll > .stage { top: auto; right: auto; bottom: auto; left: auto; overflow: visible; scrollbar-width: auto; scrollbar-color: auto; }
+.paged .scroll { background: var(--tool); }
+.paged .stage { min-width: 794px; max-width: none; margin-block: calc(var(--chrome-h) + 28px) 28px; padding: 96px 77px var(--foot, 96px); background: var(--bg); }
+
+.ProseMirror { position: relative; z-index: 1; outline: none; white-space: pre-wrap; white-space: break-spaces; word-wrap: break-word; font-size: 17px; line-height: 1.7; color: var(--body); caret-color: transparent; animation: page-in var(--t-3) var(--e-out); font-feature-settings: "liga" 0; }
+@keyframes page-in { from { opacity: 0; transform: translateY(8px); } }
+.ProseMirror ::selection { background: transparent; }
+.ProseMirror p { margin: 0 0 .85em; }
+.ProseMirror h1, .ProseMirror h2, .ProseMirror h3 { font-family: var(--font-display); font-weight: 700; color: var(--text); margin: 0; text-wrap: pretty; }
+.ProseMirror h1 { font-size: 40px; line-height: 1.12; letter-spacing: -.012em; padding: 4px 0 18px; }
+.ProseMirror h2 { font-size: 26px; line-height: 1.28; letter-spacing: -.008em; padding: 26px 0 10px; }
+.ProseMirror h3 { font-size: 20px; line-height: 1.38; padding: 16px 0 6px; }
+.ProseMirror strong { font-weight: 600; color: var(--text); }
+.ProseMirror ul, .ProseMirror ol { margin: 0 0 .85em; padding: 0 0 0 1.5em; }
+.ProseMirror li { padding-left: .15em; }
+.ProseMirror li > p { margin-bottom: .3em; }
+.ProseMirror ul { list-style: none; }
+.ProseMirror ul > li { position: relative; }
+.ProseMirror ul > li::before { content: ""; position: absolute; left: -1em; top: .72em; width: 5px; height: 5px; background: var(--muted); }
+.ProseMirror ol > li::marker { color: var(--muted); font-variant-numeric: tabular-nums; }
+.ProseMirror img { display: block; width: 100%; height: auto; border-radius: 10px; margin: .4em 0 1.1em; }
+.ProseMirror-selectednode img, img.ProseMirror-selectednode { outline: 2px solid var(--text); outline-offset: 2px; }
+.ProseMirror .tableWrapper { margin: .3em 0 1.3em; overflow-x: auto; }
+.ProseMirror table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 15px; line-height: 1.55; }
+.ProseMirror th, .ProseMirror td { position: relative; box-sizing: border-box; padding: 9px 12px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--tool); }
+.ProseMirror th { font-weight: 600; color: var(--text); border-bottom-color: var(--text); }
+.ProseMirror th p, .ProseMirror td p { margin: 0; }
+.ProseMirror .selectedCell { background: var(--sel); }
+.ProseMirror .ProseMirror-separator { display: inline !important; border: none !important; margin: 0 !important; }
+.ProseMirror .ProseMirror-trailingBreak { display: inline; }
+
+/* the selection is drawn so it can stretch; the caret is drawn so it can glide */
+.sels { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+.sels i { position: absolute; left: 0; top: 0; border-radius: 3px; background: var(--sel); transition: left 90ms var(--e-out), top 90ms var(--e-out), width 90ms var(--e-out), height 90ms var(--e-out); animation: fade-in 90ms var(--e-out); }
+.caret { position: absolute; left: 0; top: 0; z-index: 3; width: 2px; margin-left: -1px; border-radius: 1px; background: var(--accent); pointer-events: none; will-change: transform; }
+.caret.is-off { opacity: 0; }
+.caret.is-blink { animation: blink 1.06s linear infinite; }
+/* a letter just typed fades in where it lands, without rising */
+.fresh { position: relative; animation: fresh 240ms var(--e-out) both; }
+.measuring .fresh { top: 0 !important; }
+
+/* the small bar over a selection, and the one over a table */
+.bub { position: absolute; left: 0; top: 0; z-index: 4; display: flex; gap: 2px; padding: 4px; border-radius: 10px; background: var(--glass-float); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-edge); box-shadow: var(--glass-shadow); color: var(--text); transform-origin: 50% 100%; opacity: 0; pointer-events: none; transform: translate(var(--x, 0), calc(var(--y, 0) + 6px)) scale(.96); transition: opacity var(--t-2) var(--e-out), transform var(--t-2) var(--e-out); }
+.bub.below { transform-origin: 50% 0; transform: translate(var(--x, 0), calc(var(--y, 0) - 6px)) scale(.96); }
+.bub.on { opacity: 1; pointer-events: auto; transform: translate(var(--x, 0), var(--y, 0)); }
+.bub.jump { transition: none; }
+.bub .tb { width: auto; min-width: 28px; height: 28px; color: var(--text); }
+.bub .tb:hover { background: var(--glass-hover); color: var(--text); }
+.bub .tb[aria-pressed="true"] { background: var(--text); color: var(--bg); }
+.tblbar .tb { font-family: var(--font-text); padding: 0 9px; }
+
+/* a break between sheets: the rest of this sheet, the gap on the desk, the next sheet's top margin */
+.ProseMirror p > .pb, .ProseMirror h1 > .pb, .ProseMirror h2 > .pb, .ProseMirror h3 > .pb { white-space: normal; }
+.pb { position: relative; display: block; user-select: none; animation: pb-in var(--t-3) var(--e-out); transition: height var(--t-3) var(--e-out), opacity var(--t-2) var(--e-out); }
+@keyframes pb-in { from { height: 0; opacity: 0; } }
+.pb-gap { position: absolute; left: -77px; right: -77px; bottom: 96px; height: 28px; background: var(--tool); transition: background-color var(--t-3) var(--e-out); }
+.pb-no { position: absolute; left: 0; right: 0; bottom: 164px; text-align: center; font-family: var(--font-mono); font-size: 11px; line-height: 1; color: var(--muted); font-variant-numeric: tabular-nums; }
+.leaving .pb { height: 0 !important; opacity: 0; }
+.last-no { position: absolute; left: 0; right: 0; bottom: 40px; text-align: center; font-family: var(--font-mono); font-size: 11px; line-height: 1; color: var(--muted); opacity: 0; pointer-events: none; font-variant-numeric: tabular-nums; transition: opacity var(--t-2) var(--e-out); }
+.paged .last-no { opacity: 1; }
+.leaving .last-no { opacity: 0; }
+
+@media (max-width: 1040px) { .code .meta .lab { max-width: 0; opacity: 0; margin-left: -5px; } .code .meta [data-tip]::after { display: block !important; } }
+@media (max-width: 720px) { .tree-on .codehost { right: 0; } .ctree { background: var(--bg); } }
+@media (max-width: 860px) {
+  .bar { justify-content: flex-start; overflow-x: auto; scrollbar-width: none; }
+  [data-tip]::after { display: none; }
+  .sep { margin: 0 6px; }
+}
+@media (max-width: 560px) { .count, .state { display: none; } }
+/* without blur the glass turns solid, so the words behind can't show through sharp */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) { :root { --glass: var(--bg); --glass-float: var(--bg); } }
+/* Markdown keeps what its format can write down; plain text has no bar at all */
+.md-file .word-only, .txt-file .word-only { display: none !important; }
+.txt-file .bar, .txt-file .bub:not(.tblbar) { display: none; }
+.txt-file { --chrome-h: 53px; }
+.txt-file .ProseMirror p { margin: 0; }
+.dfind { top: calc(var(--chrome-h) + 10px); }
+.code .dfind { display: none; }
+.pm-match { background: color-mix(in srgb, var(--text) 13%, transparent); border-radius: 2px; }
+.pm-match.cur { background: color-mix(in srgb, var(--accent) 34%, transparent); }
+
+/* the long scroll: nothing to edit, so the status line says so; levels read by weight and tone */
+.log-only { display: none !important; }
+.code.log-file .log-only { display: inline-flex !important; }
+.code:not(.log-file) .log-only { display: none !important; }
+.log-file #csIndent, .log-file #csEol, .log-file #csEnc, .log-file .cfind .f-more, .log-file .cfind .f-repbox { display: none; }
+.cs-info { flex: none; color: var(--muted); }
+.cs-info:empty { display: none; }
+.log-file .codehost .cm-content { padding-block-end: 16px; }
+.log-file .cm-line { color: var(--code-soft); }
+.log-info { color: var(--code-faint); }
+.log-debug { color: var(--code-faint); font-style: italic; }
+.log-warn { color: var(--text); font-weight: 500; }
+.log-error { color: var(--c-red); font-weight: 500; }
+
+/* a window with no file: one thing to do, and the last few files */
+.is-empty .bar, .is-empty .scroll, .is-empty .codehost, .is-empty .cstatus, .is-empty .count, .is-empty .meta > :not(#settings, .win-btn, .win-sep) { display: none !important; }
+.recent-row { width: calc(100% + 16px); box-sizing: border-box; display: flex; align-items: center; gap: 10px; height: 36px; padding: 0 8px; margin-left: -8px; border-radius: 7px; font-size: 13px; line-height: 1; color: var(--text); transition: background-color var(--t-1) var(--e-out), transform var(--t-1) var(--e-out); }
+.recent-name { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.recent-row:active { transform: scale(.99); }
+
+/* a file over the window: the whole window answers, and orange says it is happening now */
+.drop-text { margin: 0; font-family: var(--font-display); font-size: 24px; font-weight: 600; line-height: 1.2; transform: translateY(6px); transition: transform var(--t-3) var(--e-out); }
+.drop-view.on .drop-text { transform: none; }
+
+/* closing with unsaved work */
+/* the one answer that loses work stands apart: bare words on the title's left edge, with a wider click target that doesn't show */
+
+/* something off with the file: a third row of the same glass, which opens and closes */
+.has-notice .codehost .cm-scroller { padding-top: calc(var(--head-h) + 48px); }
+.has-notice .stage { padding-top: calc(var(--chrome-h) + 104px); }
+.has-notice.paged .stage { padding-top: 96px; margin-top: calc(var(--chrome-h) + 76px); }
+.locked .bar { opacity: .4; pointer-events: none; }
+.fi.is-inkfall > input { color: transparent; caret-color: transparent; }
+.caret.is-off, .cm-dcaret.is-off { animation: none !important; opacity: 0 !important; }
+.where .name, .recent-name { line-height: 1.4; }
+@media (max-width: 720px) {
+  .meta .lab { max-width: 0; opacity: 0; margin-left: -5px; }
+  .meta [data-tip]::after { display: block !important; }
+  .notice { display: block; }
+  .notice-in { display: none; }
+  .notice.on .notice-in { display: flex; flex-wrap: wrap; }
+  .notice-t { flex-basis: calc(100% - 30px); }
+  .notice-b { margin-left: 28px; }
+  .has-notice .codehost .cm-scroller { padding-top: calc(var(--head-h) + 96px); }
+  .has-notice .stage { padding-top: calc(var(--chrome-h) + 150px); }
+}
+
+/* on paper: only the words, in black on white, and the system window does the sheets */
+.print-code { display: none; }
+@media print {
+  @page { size: A4; margin: 25mm 20mm; }
+  :root:root:root { color-scheme: light; --bg: #fff; --text: #000; --muted: #444; --body: #000; --c-gray: #555; --c-red: #8c1d18; --c-blue: #1a4190; --c-green: #235a3a; }
+  html, body { height: auto; overflow: visible; background: #fff; }
+  #app { height: auto; }
+  .chrome, .cstatus, .ctree, .cfind, .cgoto, .pop, .dlg, .set, .ask-wrap, .drop-view, .empty-view, .caret, .sels, .bub, .pb, .last-no, .codehost, .arthost { display: none !important; }
+  .scroll { position: static; overflow: visible; background: none !important; }
+  .stage, .paged .stage, .has-notice .stage { width: auto; max-width: none; min-width: 0; margin: 0; padding: 0; background: none; }
+  .ProseMirror h1, .ProseMirror h2, .ProseMirror h3 { break-after: avoid; }
+  .ProseMirror img, .ProseMirror tr { break-inside: avoid; }
+  .print-code-on .print-code { display: block; margin: 0; font-family: var(--font-mono); font-size: 10pt; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; }
+}
+/* words on glass: glass can sit over any picture, so they stay dark enough to read on it */
+.chrome, .set, .dlg, .pop, .ask, .cfind, .cgoto, .bub, .cstatus, .ctree { --muted: color-mix(in srgb, var(--text) 74%, var(--bg)); }
+.set-tab, .card, .opt, .lic-back, .tb, .f-b, .cs-b, .seg .sg { color: var(--body); }
+@media (prefers-reduced-motion: reduce) {
+    .caret.is-blink { animation: blink 1.06s linear infinite !important; }
+}
+
+/* what a Word file holds that can't be edited here: the same words, quieter, and it can't be typed into */
+.doc-locked { margin: 0 0 .85em; color: var(--muted); white-space: pre-wrap; cursor: default; min-height: 1em; }
+.doc-locked.h1, .doc-locked.h2, .doc-locked.h3 { font-family: var(--font-display); font-weight: 700; }
+.doc-locked.h1 { font-size: 40px; line-height: 1.12; padding: 4px 0 18px; margin: 0; }
+.doc-locked.h2 { font-size: 26px; line-height: 1.28; padding: 26px 0 10px; margin: 0; }
+.doc-locked.h3 { font-size: 20px; line-height: 1.38; padding: 16px 0 6px; margin: 0; }
+.doc-locked table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 15px; line-height: 1.55; }
+.doc-locked td { box-sizing: border-box; padding: 9px 12px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--tool); }
+.doc-locked.ProseMirror-selectednode { outline: 2px solid var(--muted); outline-offset: 2px; border-radius: 2px; }
+
+/* a Markdown link is the text it is; a thin line says it is a link, and it never opens anything by itself */
+.md-link { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; text-decoration-color: var(--muted); }
+
+
+/* DOS text art (.nfo, .diz, .ans): view-only, in a DOS face whose 8 × 16 cells join into lines and blocks. The words are
+   the file's, so they keep its size; an .ans brings its own black and its colours (art-view.js), as a picture does */
+.arthost { display: none; position: absolute; inset: 0; overflow: auto; box-sizing: border-box; padding: calc(var(--head-h) + 32px) var(--gutter-r) 48px var(--gutter-l); outline: none; scrollbar-width: thin; scrollbar-color: var(--tool) transparent; }
+.art-file .arthost { display: block; animation: fade-in var(--t-2) var(--e-out); }
+.art-file .bar, .art-file .scroll { display: none; }
+.art-file .doc-only, .art-file .code-only, .art-file #findBtn, .art-file .tool-sep { display: none !important; }
+.art { width: max-content; margin: 0 auto; font-family: "Unscii 16", var(--font-mono); font-size: 16px; line-height: 16px; font-variant-ligatures: none; font-kerning: none; white-space: pre; color: var(--text); }
+.art.ans { padding: 16px; }
+.art-row { height: 16px; }
+.art ::selection { background: var(--sel); }
+.has-notice .arthost { padding-top: calc(var(--head-h) + 48px + 32px); }
+@media (max-width: 720px) { .has-notice .arthost { padding-top: calc(var(--head-h) + 96px + 32px); } }
+
+/* the long scroll: the same face and measures as the code view; only the lines on screen exist */
+.ls { position: absolute; inset: 0; overflow: scroll; outline: none; font-family: var(--font-mono); font-size: 14px; line-height: 1.65; font-variant-ligatures: none; color: var(--text); scrollbar-width: thin; scrollbar-color: var(--tool) transparent; }
+.ls-spacer { width: 1px; }
+.ls-view { position: sticky; left: 0; top: 0; width: 100%; height: 100%; margin-top: 0; overflow: hidden; float: left; margin-bottom: -100%; }
+.ls-spacer { position: absolute; left: 0; top: 0; }
+.ls-rows { position: absolute; left: 0; top: 0; min-width: 100%; will-change: transform; }
+.ls-row { display: flex; align-items: flex-start; width: max-content; min-width: 100%; }
+.ls.wrap .ls-row { width: 100%; }
+.ls-no { flex: none; position: relative; z-index: 1; box-sizing: border-box; min-width: 68px; padding: 0 20px 0 18px; text-align: right; background: var(--bg); color: var(--code-faint); font-size: 12px; font-variant-numeric: tabular-nums; user-select: none; transform: translateX(var(--sx, 0)); }
+.ls-t.cm-line { flex: 1 1 auto; min-height: 1.65em; padding: 0 24px 0 6px; white-space: pre; color: var(--code-soft); }
+.ls.wrap .ls-t.cm-line { min-width: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.ls ::selection { background: var(--sel); }
+.ls .cm-searchMatch { background: color-mix(in srgb, var(--text) 12%, transparent); border-radius: 2px; }
+.ls .cm-searchMatch-selected { background: var(--text); color: var(--bg); }

@@ -1,0 +1,88 @@
+[package]
+name = "dotany-image"
+version = "1.0.0"
+edition = "2021"
+rust-version = "1.80"
+publish = false
+
+[lib]
+name = "dotany_image_lib"
+crate-type = ["rlib"]
+
+[[bin]]
+name = "dotany-image"
+path = "src/main.rs"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+# the family's part: the window, atomic saves, settings and recent files, the watcher, fonts and the platform layer
+dotany-base = { path = "../../shared/rust" }
+# what a file is, what a picture carries besides pixels, the work on pixels, and the PCX and ILBM readers, kept once with
+# the hub's converter (shared/picture)
+dotany-picture = { path = "../../shared/picture" }
+# picture formats: only these. No AVIF, HEIC, JPEG XL, PSD or RAW code is compiled in; scripts/check-deps.mjs fails the build otherwise.
+# tga, qoi, pnm (PBM, PGM, PPM, PAM) and ff (farbfeld) are only read, never written; PCX and IFF ILBM are read by our own code (dotany-picture's pcx.rs and ilbm.rs)
+image = { version = "0.25", default-features = false, features = ["bmp", "ico", "jpeg", "png", "tga", "qoi", "pnm", "ff"] }
+gif = { version = "0.14", default-features = false, features = ["std", "color_quant"] }
+tiff = { version = "0.11", default-features = false, features = ["deflate", "lzw", "jpeg", "fax"] }
+libwebp-sys = { version = "0.14", default-features = false, features = ["std", "parallel"] }
+jpeg-encoder = { version = "0.7", default-features = false, features = ["simd", "std"] }
+weezl = "0.1"
+rayon = "1"
+lz4_flex = { version = "0.14", default-features = false, features = ["std", "safe-encode", "safe-decode"] }
+qcms = "0.3"
+quick-xml = "0.41"
+
+# only memory.rs uses this: how much memory a large picture may take
+[target.'cfg(windows)'.dependencies]
+windows-sys = { version = "0.59", features = ["Win32_System_SystemInformation"] }
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "s"
+panic = "unwind"
+strip = true
+
+# pictures are all arithmetic: the code that touches pixels is built for speed, everything else for size
+[profile.release.package.dotany-image]
+opt-level = 3
+[profile.release.package.dotany-picture]
+opt-level = 3
+[profile.release.package.image]
+opt-level = 3
+[profile.release.package.zune-jpeg]
+opt-level = 3
+[profile.release.package.zune-core]
+opt-level = 3
+[profile.release.package.png]
+opt-level = 3
+[profile.release.package.fdeflate]
+opt-level = 3
+[profile.release.package.miniz_oxide]
+opt-level = 3
+[profile.release.package.flate2]
+opt-level = 3
+[profile.release.package.gif]
+opt-level = 3
+[profile.release.package.color_quant]
+opt-level = 3
+[profile.release.package.weezl]
+opt-level = 3
+[profile.release.package.tiff]
+opt-level = 3
+[profile.release.package.jpeg-encoder]
+opt-level = 3
+[profile.release.package.fast_image_resize]
+opt-level = 3
+[profile.release.package.lz4_flex]
+opt-level = 3
+[profile.release.package.qcms]
+opt-level = 3
+[profile.release.package.libwebp-sys]
+opt-level = 3

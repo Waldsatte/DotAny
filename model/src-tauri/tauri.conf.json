@@ -1,0 +1,33 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "DotAny 3D",
+  "version": "1.0.0",
+  "identifier": "com.dotany.model",
+  "build": {
+    "frontendDist": "../dist",
+    "beforeBuildCommand": "node scripts/build.mjs",
+    "beforeDevCommand": "node scripts/build.mjs"
+  },
+  "app": {
+    "windows": [],
+    "security": {
+      "csp": {
+        "default-src": "'self'",
+        "script-src": "'self' 'wasm-unsafe-eval'",
+        "worker-src": "blob:",
+        "style-src": "'self' 'unsafe-inline'",
+        "font-src": "'self' dotfont: http://dotfont.localhost",
+        "img-src": "'self' data: blob: dotmodel: http://dotmodel.localhost",
+        "connect-src": "ipc: http://ipc.localhost data: blob: dotmodel: http://dotmodel.localhost"
+      }
+    }
+  },
+  "bundle": {
+    "active": false,
+    "icon": [
+      "icons/icon.ico",
+      "icons/icon.png",
+      "icons/icon.icns"
+    ]
+  }
+}

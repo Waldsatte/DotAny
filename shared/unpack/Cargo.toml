@@ -1,0 +1,34 @@
+[package]
+name = "dotany-unpack"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.80"
+publish = false
+description = "Archives as DotAny Archive reads them, for Archive and the hub's converter"
+
+[lib]
+name = "dotany_unpack"
+
+# libarchive's RAR, LHA, cpio and ar readers, built from vendor/ by build.rs
+[build-dependencies]
+cc = "1"
+
+# Only what reading needs: each program asks for the writing side (zip's "time", 7z's "compress" and "util") itself.
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+# ZIP: every method and encryption Archive opens (deflate, deflate64, bzip2, LZMA, PPMd, xz; ZipCrypto and AES)
+zip = { version = "9", default-features = false, features = ["aes-crypto", "deflate-flate2-zlib-rs", "deflate64", "bzip2", "lzma", "ppmd", "xz"] }
+# 7z, LZMA SDK's algorithms ported to Rust: AES-256, bzip2, deflate and PPMd beside LZMA and LZMA2
+sevenz-rust2 = { version = "0.24", default-features = false, features = ["aes256", "bzip2", "deflate", "ppmd"] }
+tar = { version = "0.4", default-features = false }
+# gzip, and the CRC a 7z entry is held to
+flate2 = { version = "1", default-features = false, features = ["zlib-rs"] }
+# single-file compression and compressed tar beside gzip: bzip2 and xz are the same pure-Rust decoders zip already uses,
+# zstd is ruzstd (pure Rust, MIT). LHA, cpio and ar are read by libarchive's readers, built by build.rs; none of them is written
+bzip2 = "0.6"
+lzma-rust2 = { version = "0.24", default-features = false, features = ["std", "xz"] }
+ruzstd = "0.9"
+
+# the Mac: RAR's names are read in a UTF-8 locale (src/libarchive.rs)
+[target.'cfg(target_os = "macos")'.dependencies]
+libc = "0.2"

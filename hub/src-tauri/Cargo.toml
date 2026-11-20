@@ -1,0 +1,59 @@
+[package]
+name = "dotany-hub"
+version = "1.0.0"
+edition = "2021"
+rust-version = "1.80"
+publish = false
+
+[lib]
+name = "dotany_hub_lib"
+crate-type = ["rlib"]
+
+# the program is called simply DotAny
+[[bin]]
+name = "dotany"
+path = "src/main.rs"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+# the family's part: settings, the shared recent list, fonts, the platform layer and the window
+[dependencies]
+dotany-base = { path = "../../shared/rust" }
+tauri = { version = "2", features = [] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+rfd = { version = "0.15", default-features = false, features = ["common-controls-v6"] }
+# the conversion work is the family's crate: every format as the tools read and write it. Through it,
+# dotany-sound-encode's build puts libmp3lame.dll beside dotany.exe
+dotany-convert = { path = "../../shared/convert" }
+# Check for Updates and Install (src/update.rs): the update's SHA-256, and the Ed25519 signature on SHA256SUMS.txt
+# (minisign's format, no dependencies of its own). The download itself is Windows' WinHTTP (src/net.rs says why)
+sha2 = "0.10"
+minisign-verify = "0.3"
+
+[target.'cfg(windows)'.dependencies]
+windows-sys = { version = "0.59", features = [
+  "Win32_Foundation",
+  "Win32_Networking_WinHttp",
+  "Win32_Security",
+  "Win32_Storage_FileSystem",
+  "Win32_System_Registry",
+  "Win32_System_Threading",
+  "Win32_UI_Shell",
+  "Win32_UI_WindowsAndMessaging",
+] }
+
+# the Mac (src/system/macos.rs, src/net.rs): the login item, choosing the default program, fetching with NSURLSession.
+# All already in Tauri's tree there
+[target.'cfg(target_os = "macos")'.dependencies]
+objc2 = "0.6"
+block2 = "0.6"
+objc2-foundation = { version = "0.3", default-features = false, features = ["std", "block2", "NSString", "NSURL", "NSError", "NSData", "NSDictionary", "NSObject", "NSURLSession", "NSURLRequest", "NSURLResponse", "NSOperation"] }
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "s"
+panic = "unwind"
+strip = true

@@ -1,0 +1,136 @@
+/* DotAny Video: this tool's own sheet, after the family's (shared/web/family.css), which it only adds to. Colours and
+   motion come from the family's variables, type sizes from the family's scale. */
+
+/* the bar the timeline below is built on */
+.bar { flex: none; position: relative; z-index: 5; display: flex; align-items: center; justify-content: center; gap: 2px; height: 48px; padding-left: var(--gutter-l); padding-right: var(--gutter-r); }
+.is-empty .stage, .is-empty .dock-row, .is-empty .side, .is-empty .count, .is-empty .subline, .is-empty .meta > :not(#settings, .win-btn, .win-sep) { display: none !important; }
+.meta .tb, .meta .count { color: var(--body); }
+.meta .count { white-space: nowrap; }
+
+.chrome { transition: transform var(--t-3) var(--e-out), opacity var(--t-2) var(--e-out), background-color var(--t-2) var(--e-out); }
+.resting .chrome { transform: translateY(-101%); opacity: 0; }
+/* the Mac: in a window the top stays and the film is fitted below it (the system's buttons are not part of the top and
+   could not go with it); it steps aside only in full screen. The dock and the pointer rest the same way */
+[data-platform="mac"]:not(.frame-full) .chrome { transform: none; opacity: 1; transition: background-color var(--t-2) var(--e-out); }
+[data-platform="mac"]:not(.frame-full) .stage { top: 52px; }
+.resting .dock-row { opacity: 0; transform: translate(-50%, 10px); pointer-events: none; }
+.resting, .resting .stage { cursor: none; }
+
+.stage { position: absolute; inset: 0; overflow: hidden; }
+.stage > canvas, .stage > video { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: contain; }
+.subline { position: absolute; z-index: 2; left: 50%; bottom: 92px; max-width: min(84%, 860px); transform: translateX(-50%); text-align: center; white-space: pre-line; font-family: var(--font-text); font-weight: 500; line-height: 1.4; color: #fff; text-shadow: 0 1px 2px rgb(0 0 0 / .85), 0 0 12px rgb(0 0 0 / .45); pointer-events: none; transition: bottom var(--t-2) var(--e-out); }
+.resting .subline { bottom: 32px; }
+.subline.s { font-size: 17px; }
+.subline.m { font-size: 20px; }
+.subline.l { font-size: 24px; }
+.side-note { margin: 0; font-size: 12px; line-height: 1.5; color: var(--muted); }
+.chip { height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 7px; font-size: 12px; font-weight: 500; line-height: 1; color: var(--muted); font-variant-numeric: tabular-nums; transition: background-color var(--t-1) var(--e-out), color var(--t-1) var(--e-out); }
+
+/* the info panel: the cover, the title field and the facts */
+.cover-big { position: relative; display: block; width: 100%; aspect-ratio: 16 / 9; overflow: hidden; padding: 0; border-radius: 10px; background: var(--glass-hover); }
+.cover-big img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.cover-big.none { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 13px; line-height: 1; color: var(--body); }
+.cover-big:focus-visible { outline: 1px solid var(--accent); outline-offset: 2px; }
+.cover-tip { position: absolute; right: 8px; bottom: 8px; height: 28px; padding: 0 10px; display: inline-flex; align-items: center; border-radius: 7px; background: var(--glass-float); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-edge); font-size: 12px; font-weight: 500; line-height: 1; color: var(--text); opacity: 0; transition: opacity var(--t-1) var(--e-out); }
+.cover-big:hover .cover-tip, .cover-big:focus-visible .cover-tip { opacity: 1; }
+.info-words { display: grid; margin-top: 12px; }
+.side .field { height: 34px; margin: 0; font-family: var(--font-display); font-size: 17px; font-weight: 600; color: var(--text); }
+.side .field-in { flex: 1; }
+.side .field::before { opacity: 0; transition: opacity var(--t-1) var(--e-out); }
+.side .field:hover::before { opacity: 1; }
+.info-actions { margin-top: 10px; }
+.facts { margin: 12px 0 0; padding-top: 12px; border-top: 1px solid var(--glass-edge); font-size: 12px; line-height: 1.4; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+/* the dock: a glass pill and the arrows beside it, with the film's timeline in the middle */
+.dock-row { position: absolute; z-index: 6; left: 50%; bottom: max(16px, env(safe-area-inset-bottom, 0px)); display: flex; align-items: flex-end; gap: 8px; width: min(820px, calc(100% - 24px)); transform: translateX(-50%); transition: left var(--t-3) var(--e-out), width var(--t-3) var(--e-out), opacity var(--t-2) var(--e-out), transform var(--t-2) var(--e-out); }
+.side.on ~ .dock-row { left: calc(50% - 144px); width: min(820px, calc(100% - 312px)); }
+.pill { position: relative; flex: 1; display: flex; flex-direction: column; justify-content: flex-end; padding: 6px; min-width: 0; box-sizing: border-box; border-radius: 16px; background: var(--glass-float); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-edge); box-shadow: var(--glass-shadow); white-space: nowrap; }
+.pill-main { display: flex; align-items: center; gap: 2px; min-width: 0; }
+.pill .tb.rate { min-width: 52px; font-size: 13px; font-weight: 400; }
+.pill .tb.rate[aria-pressed="true"] { color: var(--bg); }
+.rate-sheet { position: fixed; z-index: 40; display: flex; box-sizing: border-box; background: var(--glass-float); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-edge); box-shadow: var(--glass-shadow); opacity: 0; pointer-events: none; transform: translateY(5px); transition: opacity var(--t-1) var(--e-out), transform var(--t-2) var(--e-out); }
+.rate-sheet.on { opacity: 1; pointer-events: auto; transform: none; }
+.rate-sheet .sg { min-width: 44px; height: 30px; font-size: 13px; font-weight: 400; font-variant-numeric: tabular-nums; }
+.pic-nav.tb { flex: none; width: 54px; height: 54px; padding: 0; border-radius: 16px; background: var(--glass-float); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-edge); box-shadow: var(--glass-shadow); box-sizing: border-box; color: var(--body); }
+.pic-nav.tb:hover { background: color-mix(in srgb, var(--text) 10%, var(--glass-float)); color: var(--text); }
+.pic-nav[data-tip]::after { top: auto; bottom: calc(100% + 10px); transform: translate(-50%, 3px); }
+.pic-nav[data-tip]:hover::after { transform: translate(-50%, 0); }
+.clock { flex: none; min-width: 84px; text-align: center; font-size: 13px; font-weight: 400; line-height: 1; font-variant-numeric: tabular-nums; color: var(--text); }
+.clock i { font-style: normal; color: var(--muted); }
+
+.bar { position: relative; flex: 1; min-width: 60px; height: 40px; margin: 0 10px; cursor: pointer; touch-action: none; }
+.bar::before { content: ""; position: absolute; left: 0; right: 0; top: 19px; height: 2px; border-radius: 1px; background: var(--glass-edge); }
+.bar-fill { position: absolute; left: 0; top: 19px; height: 2px; border-radius: 1px; background: var(--text); }
+.bar-now { position: absolute; top: 12px; width: 2px; height: 16px; margin-left: -1px; border-radius: 1px; background: var(--accent); }
+.bar-keep { position: absolute; top: 12px; height: 16px; border-radius: 3px; background: var(--glass-hover); box-shadow: inset 0 0 0 1px var(--glass-edge); }
+.bar-tip { position: absolute; bottom: 100%; margin-bottom: 8px; padding: 4px 8px; border-radius: 6px; background: var(--text); color: var(--bg); font-size: 12px; line-height: 1; font-variant-numeric: tabular-nums; white-space: nowrap; transform: translateX(-50%); pointer-events: none; opacity: 0; transition: opacity var(--t-1) var(--e-out); }
+.bar:hover .bar-tip { opacity: 1; }
+
+/* trimming: the timeline becomes a strip of the film itself, in a frame */
+.trim { display: none; position: relative; height: 56px; margin: 28px 12px 10px; touch-action: none; cursor: pointer; }
+.cutting .trim { display: block; }
+.sinking .trim { display: block; position: absolute; margin: 0; pointer-events: none; }
+.cutting .bar, .cutting .vol, .cutting #volBtn, .cutting #rate, .cutting #fullBtn, .cutting .pill-main .sep { display: none; }
+.cutting .pic-nav { opacity: 0; pointer-events: none; }
+.pic-nav.tb { transition: opacity var(--t-2) var(--e-out), background-color var(--t-1) var(--e-out), color var(--t-1) var(--e-out); }
+.cut-only { display: none; }
+.cutting .cut-only { display: inline-flex; }
+/* 3px above and below, given back by the margins: room for accents and descenders the one-line box would cut (nothing moves) */
+.cut-info { flex: 1; min-width: 0; justify-content: flex-end; margin-right: 8px; overflow: hidden; padding-block: 3px; margin-block: -3px; font-size: 12px; line-height: 1; white-space: pre; font-variant-numeric: tabular-nums; color: var(--text); }
+.cut-note { color: var(--muted); }
+.pill-main .btn { flex: none; margin-right: 4px; white-space: nowrap; }
+.trim-track, .trim-fill { display: none; position: absolute; top: 50%; height: 2px; margin-top: -1px; left: 0; }
+.sinking .trim-track, .sinking .trim-fill, .rising .trim-track, .rising .trim-fill { display: block; }
+.trim-track { right: 0; background: var(--glass-edge); }
+.trim-fill { background: var(--text); }
+.sinking .bar::before, .sinking .bar-fill { visibility: hidden; }
+.trim-film { position: absolute; inset: 0; display: block; width: 100%; height: 100%; border-radius: 6px; background: var(--glass-hover); }
+.trim-dim { position: absolute; top: 0; bottom: 0; background: color-mix(in srgb, var(--bg) 68%, transparent); }
+.trim-dim:nth-of-type(1) { border-radius: 6px 0 0 6px; }
+.trim-frame { position: absolute; top: -2px; bottom: -2px; box-sizing: border-box; border: 2px solid var(--text); border-radius: 8px; pointer-events: none; }
+.trim-grip { position: absolute; top: -2px; bottom: -2px; width: 16px; margin-left: -8px; padding: 0; cursor: ew-resize; touch-action: none; }
+.trim-grip::after { content: ""; position: absolute; left: 6px; top: 50%; width: 4px; height: 22px; margin-top: -11px; border-radius: 2px; background: var(--text); box-shadow: 0 0 0 2px var(--bg); transition: height var(--t-1) var(--e-out), margin-top var(--t-1) var(--e-out); }
+.trim-grip:hover::after { height: 28px; margin-top: -14px; }
+.trim-grip:focus-visible { outline: 1px solid var(--accent); }
+.trim-now { position: absolute; top: -7px; bottom: -7px; width: 2px; margin-left: -1px; border-radius: 1px; background: var(--accent); pointer-events: none; }
+.trim-tag { position: absolute; bottom: calc(100% + 8px); font-size: 12px; line-height: 1; font-variant-numeric: tabular-nums; color: var(--text); white-space: nowrap; pointer-events: none; }
+.trim-tag.a { transform: translateX(-100%) translateX(8px); }
+.trim-tag.b { transform: translateX(-8px); }
+.trim-tag.a.in { transform: translateX(-2px); }
+.trim-tag.b.in { transform: translateX(-100%) translateX(2px); }
+.vol { position: relative; flex: none; width: 76px; height: 40px; margin-right: 6px; }
+.vol input[type=range] { -webkit-appearance: none; appearance: none; display: block; width: 100%; height: 40px; margin: 0; background: transparent; cursor: pointer; }
+.vol input[type=range]::-webkit-slider-runnable-track { height: 2px; border-radius: 1px; background: linear-gradient(to right, var(--text) var(--b), var(--glass-edge) var(--b)); }
+.vol input[type=range]::-moz-range-track { height: 2px; border-radius: 1px; background: linear-gradient(to right, var(--text) var(--b), var(--glass-edge) var(--b)); }
+.vol input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; margin-top: -6px; border-radius: 50%; background: var(--text); border: 2px solid var(--bg); box-sizing: border-box; transition: transform var(--t-1) var(--e-out); }
+.vol input[type=range]::-moz-range-thumb { width: 14px; height: 14px; border-radius: 50%; background: var(--text); border: 2px solid var(--bg); box-sizing: border-box; }
+.vol input[type=range]:active::-webkit-slider-thumb { transform: scale(1.18); }
+.vol input[type=range]:focus-visible { outline: 1px solid var(--accent); outline-offset: -8px; border-radius: 4px; }
+
+/* save as: the family's card; a film keeps its own format, so there's nothing to choose */
+.dlg .field { margin-bottom: 0; }
+
+/* words on glass */
+.chrome, .side, .set, .dlg, .pop, .pill, .pic-nav, .ask, .toast { --muted: color-mix(in srgb, var(--text) 74%, var(--bg)); }
+
+@media (max-width: 720px) {
+  .pic-nav { display: none !important; }
+  .vol, .pill .sep { display: none; }
+  .cut-note { display: none; }
+  .dock-row, .side.on ~ .dock-row { left: 50%; width: calc(100% - 16px); }
+  .meta .count { display: none; }
+}
+@media (max-width: 640px) {
+  .meta .lab { max-width: 0; opacity: 0; margin-left: -5px; }
+  .meta [data-tip]::after { display: none; }
+  .side { top: auto; left: max(8px, env(safe-area-inset-left, 0px)); right: max(8px, env(safe-area-inset-right, 0px)); bottom: calc(max(8px, env(safe-area-inset-bottom, 0px)) + 62px); width: auto; max-height: 44%; transform: translateY(10px); }
+  .clock { min-width: 0; font-size: 12px; }
+  .clock i { display: none; }
+}
+.chrome > .notice { pointer-events: auto; }
+
+/* the family's dock floats over the work; Video's pill sits in its row of glass instead */
+.pill { left: auto; right: auto; bottom: auto; z-index: auto; align-items: normal; gap: 0; max-width: none; transform: none; transition: none; }
+@media (max-width: 640px) {
+  .pill .tb { min-width: 40px; }
+}

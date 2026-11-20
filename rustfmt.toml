@@ -1,0 +1,12 @@
+# rustfmt's settings for every Rust package in DotAny (there is no Cargo workspace: each package's `cargo fmt` finds this
+# file by walking up). Stable options only. Comments are left as written (wrap_comments and normalize_comments stay off,
+# the defaults), and each file keeps its line endings (newline_style "Auto", the default).
+
+# the edition every Cargo.toml here has, for rustfmt run on a file without cargo (an editor); cargo fmt passes its own
+edition = "2021"
+# the 2024 style breaks a statement around a string literal too long to fit, where the 2021 style leaves it whole
+style_edition = "2024"
+# the width the repository's comments are wrapped at
+max_width = 120
+# a call, chain, struct, array or if-else stays on one line whenever it fits in 120, as the code here was written
+use_small_heuristics = "Max"

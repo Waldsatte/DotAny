@@ -1,0 +1,47 @@
+[package]
+name = "dotany-base"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.81"
+publish = false
+description = "What every DotAny tool shares on the Rust side"
+
+[dependencies]
+tauri = { version = "2", features = [] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+notify = { version = "8", default-features = false }
+rfd = { version = "0.15", default-features = false, features = ["common-controls-v6"] }
+
+# only the platform module uses this
+[target.'cfg(windows)'.dependencies]
+windows-sys = { version = "0.59", features = [
+  "Win32_Foundation",
+  "Win32_Graphics_Dwm",
+  "Win32_Graphics_Gdi",
+  "Win32_System_LibraryLoader",
+  "Win32_UI_Input_KeyboardAndMouse",
+  "Win32_UI_Shell",
+  "Win32_Storage_FileSystem",
+  "Win32_System_Registry",
+  "Win32_System_SystemInformation",
+  "Win32_System_Threading",
+  "Win32_UI_WindowsAndMessaging",
+] }
+# the family's one WebView2: its crash event and memory level (platform/windows/webview.rs); already under wry
+webview2-com = "0.39"
+windows = "0.62"
+windows-core = "0.62"
+
+# the Mac's side of the platform module (src/platform/macos.rs) and its test driver (src/testdrive.rs). notify's backend
+# on the Mac is FSEvents, but only with this feature; libc and the objc2 crates are already in Tauri's tree there
+[target.'cfg(target_os = "macos")'.dependencies]
+notify = { version = "8", default-features = false, features = ["macos_fsevent"] }
+libc = "0.2"
+objc2 = "0.6"
+block2 = "0.6"
+objc2-foundation = { version = "0.3", default-features = false, features = ["std", "NSString", "NSArray", "NSLocale", "NSUserDefaults", "NSData", "NSDictionary", "NSError", "NSGeometry", "NSObjCRuntime", "NSURL", "NSBundle", "NSObject", "NSNotification", "NSOperation", "NSTimer", "NSRunLoop", "NSDate", "block2"] }
+objc2-app-kit = { version = "0.3", default-features = false, features = ["std", "block2", "NSResponder", "NSWindow", "NSView", "NSEvent", "NSGraphicsContext", "NSApplication", "NSImage", "NSImageRep", "NSBitmapImageRep", "NSRunningApplication", "NSMenu", "NSMenuItem", "NSDocument", "NSDocumentController", "NSPanel", "NSSavePanel", "NSOpenPanel", "NSScreen", "NSControl", "NSButton", "NSWorkspace", "NSPrintInfo", "NSPrintOperation"] }
+# the window's WKWebView (src/platform/macos.rs: no page-wide pinch zoom or swipe back) and the test driver
+# (src/testdrive.rs: run JavaScript, take the page's picture)
+objc2-web-kit = { version = "0.3", default-features = false, features = ["std", "block2", "objc2-app-kit", "WKWebView", "WKContentWorld", "WKFrameInfo", "WKSnapshotConfiguration", "WKWebViewConfiguration", "WKPreferences"] }

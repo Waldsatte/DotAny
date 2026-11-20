@@ -1,0 +1,17 @@
+[package]
+name = "dotany-sound-encode"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.80"
+publish = false
+description = "MP3 and FLAC writing as DotAny Audio does it, for Audio, Recorder and the hub's converter: LAME as its own DLL, libFLAC built in"
+
+[lib]
+name = "dotany_sound_encode"
+
+[build-dependencies]
+cc = "1"
+
+[dependencies]
+# LAME is opened from its own DLL beside the exe; MP3 and FLAC come from vendor/ (see build.rs)
+libloading = "0.8"

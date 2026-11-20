@@ -1,0 +1,29 @@
+# Prettier lays out the JavaScript written here (*.js, *.mjs): each program's src/ and scripts/, shared/, the hub, the
+# installer and .github/scripts. Everything below is left as it is. Prettier also skips what .gitignore lists (dist/,
+# node_modules/, target/, ...). The version is pinned where the checks run it (prettier@3.10.1); the settings are
+# .prettierrc.json.
+
+# Other people's code, kept byte for byte as it came (books/vendor/djvujs, the C libraries' trees).
+**/vendor/
+*.min.js
+
+# Written by a build, or copied in from a package: laid out by whatever made them.
+**/src/notices.generated.js
+**/src/icons.js
+# (Text's icons.js is written by hand, and is formatted.)
+!text/src/icons.js
+text/src/code-icons.js
+model/src/draco-bin.js
+**/dist/
+**/node_modules/
+
+# Only JavaScript is formatted. The stylesheets are one rule to a line on purpose, and tests read
+# them as text; HTML, JSON, Markdown and YAML stay as they are written.
+*.css
+*.html
+*.htm
+*.json
+*.md
+*.markdown
+*.yml
+*.yaml

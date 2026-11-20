@@ -1,0 +1,7 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Events and moving the window by its top bar; everything else goes through this app's own commands.",
+  "windows": ["*"],
+  "permissions": ["core:event:default", "core:window:allow-start-dragging", "core:window:allow-internal-toggle-maximize"]
+}

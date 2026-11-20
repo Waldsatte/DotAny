@@ -1,0 +1,17 @@
+node_modules/
+*.log.tmp
+
+# build output: CI builds into .target and .build at the top of the checkout
+.target/
+.build/
+target/
+*/src-tauri/target/
+*/src-tauri/gen/
+shared/starter/src-tauri/gen/
+
+# never commit: keys, certificates, local settings
+.env
+*.pem
+*.pfx
+*.p12
+*.key

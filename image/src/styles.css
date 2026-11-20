@@ -1,0 +1,215 @@
+/* DotAny Image's own sheet, after the family's (shared/web/family.css): only what Image adds or draws its own way */
+
+/* the top line: which file, how many beside it */
+.count { margin-right: 8px; }
+.save-now { flex: none; height: 24px; max-width: 0; padding: 0; margin-left: -10px; overflow: hidden; border-radius: 6px; background: var(--text); color: var(--bg); font-size: 12px; font-weight: 500; line-height: 1; white-space: nowrap; opacity: 0; pointer-events: none; transition: max-width var(--t-3) var(--e-out), padding var(--t-3) var(--e-out), margin var(--t-3) var(--e-out), opacity var(--t-2) var(--e-out), transform var(--t-1) var(--e-out); }
+.save-now.on { max-width: 6em; padding: 0 10px; margin-left: 0; opacity: 1; pointer-events: auto; }
+.save-now:active { transform: scale(.96); }
+
+/* save as: the same glass, the same sliding pill */
+.count, .state { font-size: 13px; line-height: 1; color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
+
+/* the bar: paragraph styles on a track whose pill slides, then the groups */
+.bar { flex: none; position: relative; z-index: 5; display: flex; align-items: center; justify-content: center; gap: 2px; height: 48px; padding-left: var(--gutter-l); padding-right: var(--gutter-r); }
+.seg .sg[data-k="p"] { padding-top: 1px; }
+.grp { display: flex; gap: 2px; flex: none; }
+.tb .sw { width: 10px; height: 10px; border-radius: 50%; background: currentColor; }
+svg.i .dt { stroke-width: 3; }
+
+/* a small menu that rises from its button */
+.pop .sw { width: 11px; height: 11px; border-radius: 50%; border: 1px solid var(--glass-edge); }
+
+
+/* Layout: the picture fills the whole window; the top is the family's glass, tools float beside it only when asked for. */
+.stage { position: absolute; inset: 0; overflow: hidden; touch-action: none; cursor: default; user-select: none; }
+.photo { position: absolute; left: 0; top: 0; transform-origin: 0 0; overflow: hidden; }
+.photo.alpha { background-color: var(--bg); background-image: conic-gradient(var(--tool) 25%, transparent 0 50%, var(--tool) 0 75%, transparent 0); background-size: calc(20px / var(--z, 1)) calc(20px / var(--z, 1)); }
+.pic { position: absolute; left: 0; top: 0; }
+.pic canvas, .pic img { position: absolute; left: 0; top: 0; display: block; max-width: none; }
+.photo.pixels canvas { image-rendering: pixelated; }
+.can-pan .stage { cursor: grab; }
+.panning .stage { cursor: grabbing; }
+.tool-brush .stage { cursor: none; }
+.tool-text .stage { cursor: text; }
+.tool-crop .stage { cursor: default; }
+.is-empty .stage, .is-empty .rail, .is-empty .dock-row, .is-empty .side, .is-empty .count, .is-empty .meta > :not(#settings, .win-btn, .win-sep) { display: none !important; }
+.bar-none .edit-only, .bar-none .tools, .bar-none .rail { display: none !important; }
+.caps-crop .tool[data-k="adjust"], .caps-crop .tool[data-k="brush"], .caps-crop .tool[data-k="text"] { display: none; }
+.where .name, .recent-name { line-height: 1.4; }
+.meta .tb, .meta .count { color: var(--body); }
+
+/* the name of the file gets out of the way of its size */
+.meta .count { white-space: nowrap; }
+
+/* tools beside the picture: one panel, one kind of glass, only what this tool needs */
+.side { position: absolute; z-index: 6; top: calc(var(--chrome-now, 102px) + 10px); right: max(16px, env(safe-area-inset-right, 0px)); box-sizing: border-box; width: 264px; max-height: calc(100% - var(--chrome-now, 102px) - 26px); overflow: auto; padding: 16px; border-radius: 14px; background: var(--glass-float); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-edge); box-shadow: var(--glass-shadow); color: var(--text); opacity: 0; pointer-events: none; transform: translateX(10px); transition: opacity var(--t-1) var(--e-out), transform var(--t-2) var(--e-out), top var(--t-2) var(--e-out); scrollbar-width: thin; }
+.chips { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; }
+.chip { height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 7px; font-size: 12px; font-weight: 500; line-height: 1; font-variant-numeric: tabular-nums; transition: background-color var(--t-1) var(--e-out), color var(--t-1) var(--e-out); }
+.sw-row { display: flex; gap: 8px; }
+.swatch { position: relative; width: 24px; height: 24px; border-radius: 50%; background: var(--c); box-shadow: inset 0 0 0 1px var(--glass-edge); transition: transform var(--t-1) var(--e-out); }
+.swatch::after { content: ""; position: absolute; inset: -3px; border-radius: 50%; border: 1.5px solid var(--text); opacity: 0; transform: scale(.86); transition: opacity var(--t-1) var(--e-out), transform var(--t-2) var(--e-out); }
+.swatch[aria-pressed="true"]::after { opacity: 1; transform: none; }
+.swatch:active { transform: scale(.92); }
+.strip { position: relative; margin: 0 -16px; height: 68px; overflow: hidden; touch-action: pan-y; cursor: grab; user-select: none; -webkit-mask-image: linear-gradient(to right, transparent, #000 20%, #000 80%, transparent); mask-image: linear-gradient(to right, transparent, #000 20%, #000 80%, transparent); }
+.strip:active { cursor: grabbing; }
+.strip-track { position: absolute; left: 0; top: 4px; display: flex; gap: 6px; width: max-content; transition: transform var(--t-3) var(--e-out); }
+.strip-pic { display: block; flex: none; width: 48px; height: 60px; overflow: hidden; border-radius: 6px; background: var(--tool); }
+.strip-pic canvas { display: block; width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+.strip-pic:focus-visible { outline: 1px solid var(--accent); outline-offset: 1px; }
+/* the frame's corners share a centre with the picture's: picture radius + gap + line */
+.strip-frame { position: absolute; left: 50%; top: 0; width: 56px; height: 68px; margin-left: -28px; box-sizing: border-box; border: 2px solid var(--text); border-radius: 10px; opacity: 0; pointer-events: none; transition: opacity var(--t-1) var(--e-out); }
+.strip-frame.on { opacity: 1; }
+.strip-name { margin: -6px 0 0; text-align: center; font-size: 13px; font-weight: 500; line-height: 1.2; color: var(--text); }
+.fold-btn { width: 100%; display: flex; align-items: center; gap: 8px; height: 24px; font-size: 12px; line-height: 1; color: var(--body); transition: color var(--t-1) var(--e-out); }
+.fold-btn:hover { color: var(--text); }
+.fold-btn svg.i { width: 14px; height: 14px; margin-left: auto; transition: transform var(--t-2) var(--e-out); }
+.fold-btn[aria-expanded="true"] svg.i { transform: rotate(180deg); }
+.fold-note { color: var(--muted); opacity: 0; transition: opacity var(--t-1) var(--e-out); }
+.fold-note.on { opacity: 1; }
+.fold { display: grid; grid-template-rows: 0fr; transition: grid-template-rows var(--t-3) var(--e-out); }
+.fold.on { grid-template-rows: 1fr; }
+.fold-in { min-height: 0; overflow: hidden; display: grid; gap: 14px; opacity: 0; transition: opacity var(--t-2) var(--e-out), padding-top var(--t-3) var(--e-out); }
+.fold.on .fold-in { opacity: 1; padding-top: 14px; }
+.swatch.custom { background: conic-gradient(from 90deg, #f44, #fc3, #3c6, #3bf, #36f, #c4f, #f44); box-shadow: none; }
+.swatch.custom::before { content: ""; position: absolute; inset: 5px; border-radius: 50%; background: var(--c, var(--bg)); box-shadow: 0 0 0 1px var(--glass-edge); transform: scale(0); transition: transform var(--t-2) var(--e-out); }
+.swatch.custom.has::before { transform: none; }
+.cp { display: grid; grid-template-rows: 0fr; transition: grid-template-rows var(--t-3) var(--e-out); }
+.cp.on { grid-template-rows: 1fr; }
+.cp-in { min-height: 0; overflow: hidden; opacity: 0; transition: opacity var(--t-2) var(--e-out); display: grid; gap: 12px; }
+.cp.on .cp-in { opacity: 1; padding-top: 12px; }
+.cp-sq { position: relative; height: 120px; border-radius: 8px; touch-action: none; cursor: crosshair; background: linear-gradient(to top, #000, transparent), linear-gradient(to right, #fff, hsl(var(--h, 0) 100% 50%)); box-shadow: inset 0 0 0 1px var(--glass-edge); }
+.cp-hue { position: relative; height: 10px; margin: 2px 7px; border-radius: 999px; touch-action: none; cursor: ew-resize; background: linear-gradient(to right, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00); }
+.cp-hue::before { content: ""; position: absolute; inset: -6px -7px; }
+.cp-knob { position: absolute; top: 50%; width: 14px; height: 14px; margin: -7px 0 0 -7px; box-sizing: border-box; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 1px rgb(0 0 0 / .35); pointer-events: none; }
+.cp-sq .cp-knob { top: 0; }
+.cp-nums { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.cp-num { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
+.cp-num input { flex: 1; min-width: 0; width: 100%; height: 26px; box-sizing: border-box; padding: 0 2px; border: 0; border-bottom: 1px solid var(--glass-edge); outline: 0; background: transparent; color: var(--text); font: inherit; font-size: 13px; text-align: center; font-variant-numeric: tabular-nums; }
+.cp-num input:focus { border-bottom-color: var(--text); }
+.info-list { display: grid; margin: 0; }
+.info-list div { display: flex; justify-content: space-between; gap: 16px; padding: 8px 0; border-top: 1px solid var(--glass-edge); font-size: 12px; line-height: 1.4; }
+.info-list div:first-child { border-top: 0; padding-top: 0; }
+.info-list dt { flex: none; color: var(--muted); }
+.info-list dd { margin: 0; min-width: 0; text-align: right; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
+
+/* the crop frame: a clear window in a veil the colour of the window itself */
+.crop { position: absolute; z-index: 2; display: none; box-sizing: border-box; border: 1px solid #fff; box-shadow: 0 0 0 1px rgb(0 0 0 / .28), 0 0 0 100vmax color-mix(in srgb, var(--bg) 66%, transparent); cursor: move; }
+.tool-crop .crop { display: block; }
+.crop .third { position: absolute; background: rgb(255 255 255 / .62); opacity: 0; transition: opacity var(--t-1) var(--e-out); }
+.crop.moving .third { opacity: 1; }
+.crop .t1 { left: 33.33%; top: 0; bottom: 0; width: 1px; }
+.crop .t2 { left: 66.66%; top: 0; bottom: 0; width: 1px; }
+.crop .t3 { top: 33.33%; left: 0; right: 0; height: 1px; }
+.crop .t4 { top: 66.66%; left: 0; right: 0; height: 1px; }
+.hd { position: absolute; width: 28px; height: 28px; margin: -14px 0 0 -14px; touch-action: none; }
+.hd::before { content: ""; position: absolute; left: 7px; top: 7px; width: 14px; height: 14px; box-sizing: border-box; border-color: #fff; border-style: solid; border-width: 0; filter: drop-shadow(0 0 1px rgb(0 0 0 / .5)); }
+.hd.nw { left: 0; top: 0; cursor: nwse-resize; } .hd.nw::before { border-width: 3px 0 0 3px; left: 13px; top: 13px; }
+.hd.ne { left: 100%; top: 0; cursor: nesw-resize; } .hd.ne::before { border-width: 3px 3px 0 0; left: 1px; top: 13px; }
+.hd.sw { left: 0; top: 100%; cursor: nesw-resize; } .hd.sw::before { border-width: 0 0 3px 3px; left: 13px; top: 1px; }
+.hd.se { left: 100%; top: 100%; cursor: nwse-resize; } .hd.se::before { border-width: 0 3px 3px 0; left: 1px; top: 1px; }
+.hd.n { left: 50%; top: 0; cursor: ns-resize; } .hd.s { left: 50%; top: 100%; cursor: ns-resize; }
+.hd.e { left: 100%; top: 50%; cursor: ew-resize; } .hd.w { left: 0; top: 50%; cursor: ew-resize; }
+.hd.n::before, .hd.s::before { width: 18px; height: 3px; left: 5px; top: 13px; background: #fff; }
+.hd.e::before, .hd.w::before { width: 3px; height: 18px; left: 13px; top: 5px; background: #fff; }
+
+/* the brush: a thin ring the size of the mark it will make */
+.ring { position: fixed; z-index: 7; display: none; box-sizing: border-box; border-radius: 50%; border: 1px solid #fff; box-shadow: 0 0 0 1px rgb(0 0 0 / .45); pointer-events: none; transform: translate(-50%, -50%); }
+.tool-brush .ring.on { display: block; }
+
+/* words on the picture: typed in place, with the family's caret */
+.txt-edit { position: absolute; z-index: 3; min-width: 4px; height: 1.2em; line-height: 1.2; white-space: pre; }
+.txt-edit input { box-sizing: border-box; display: block; width: 100%; height: 100%; padding: 0; border: 0; outline: 0; background: transparent; color: inherit; font: inherit; line-height: inherit; caret-color: var(--accent); }
+.txt-edit.is-inkfall > input { color: transparent; caret-color: transparent; }
+.txt-box { position: absolute; z-index: 2; display: none; border: 1px solid #fff; box-shadow: 0 0 0 1px rgb(0 0 0 / .4); pointer-events: none; }
+.tool-text .txt-box.on { display: block; }
+
+/* the dock: everything that works on the picture, in one sheet of the family's glass */
+.dock-row { position: absolute; z-index: 6; left: 50%; bottom: max(16px, env(safe-area-inset-bottom, 0px)); display: flex; align-items: center; gap: 8px; max-width: calc(100% - 24px); transform: translateX(-50%); transition: left var(--t-3) var(--e-out); }
+.pill { display: flex; align-items: center; gap: 2px; padding: 6px; min-width: 0; box-sizing: border-box; border-radius: 16px; background: var(--glass-float); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-edge); box-shadow: var(--glass-shadow); transition: background-color var(--t-2) var(--e-out); white-space: nowrap; }
+/* Image's pill stands in the dock row with the page arrows and the zoom, so it isn't placed on its own as the family's
+   pill (Audio's) is: the dock row is */
+.pill { position: static; z-index: auto; left: auto; bottom: auto; max-width: none; transform: none; }
+@media (max-width: 640px) { .pill, .side.on ~ .pill { left: auto; right: auto; max-width: none; } }
+/* undo and redo with nothing to undo dim themselves (opacity .4 in main.js); the family's 34% on top of that would dim
+   them twice */
+.pill .tb:disabled { color: var(--body); }
+@media (max-width: 640px) {
+  .pill { justify-content: normal; }
+  .pill .tb { min-width: 40px; }
+  .pill .sep { margin: 0 8px; }
+}
+.pic-nav.tb { flex: none; width: 54px; height: 54px; padding: 0; border-radius: 16px; background: var(--glass-float); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-edge); box-shadow: var(--glass-shadow); box-sizing: border-box; color: var(--body); }
+.pic-nav.tb:hover { background: color-mix(in srgb, var(--text) 10%, var(--glass-float)); color: var(--text); }
+.pic-nav[data-tip]::after { top: auto; bottom: calc(100% + 10px); transform: translate(-50%, 3px); }
+.pic-nav[data-tip]:hover::after { transform: translate(-50%, 0); }
+.sep-extra:has(+ .pill-extra:empty) { display: none; }
+.pill .pct { min-width: 56px; }
+.side.on ~ .dock-row { left: calc(50% - 144px); }
+.side { max-height: calc(100% - var(--chrome-now, 53px) - 88px) !important; }
+.has-rail .dock-row { left: calc(50% + 47px); }
+.has-rail .side.on ~ .dock-row { left: calc(50% - 97px); }
+.has-rail .sep-tools { display: none; }
+.tools { position: relative; display: flex; gap: 2px; flex: none; }
+.tool-pl { position: absolute; left: 0; top: 0; border-radius: 10px; background: var(--text); opacity: 0; transition: transform var(--t-3) var(--e-out), width var(--t-3) var(--e-out), height var(--t-3) var(--e-out), opacity var(--t-1) var(--e-out), background-color var(--t-2) var(--e-out); }
+.tool { position: relative; z-index: 1; height: 40px; display: inline-flex; align-items: center; justify-content: center; gap: 7px; padding: 0 14px 0 12px; border-radius: 10px; font-size: 13px; font-weight: 400; line-height: 1; color: var(--body); white-space: nowrap; transition: color var(--t-2) var(--e-out), background-color var(--t-1) var(--e-out), transform var(--t-1) var(--e-out); }
+.tool:hover { background: var(--glass-hover); color: var(--text); }
+.tool:active { transform: scale(.96); }
+.tool[aria-pressed="true"], .tool[aria-pressed="true"]:hover { background: transparent; color: var(--bg); }
+/* the rail: the same tools, stacked, the same glass */
+.rail { position: absolute; z-index: 6; left: max(16px, env(safe-area-inset-left, 0px)); top: calc(var(--chrome-now, 53px) / 2 + 50%); padding: 6px; border-radius: 16px; background: var(--glass-float); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-edge); box-shadow: var(--glass-shadow); transform: translateY(-50%); }
+.rail:empty { display: none; }
+.rail .tools { flex-direction: column; }
+/* the rail is as wide as its longest name (Zuschneiden), never narrower than 56 px: every button the same width */
+.rail .tool { flex-direction: column; min-width: 56px; height: 56px; padding: 0 6px; box-sizing: border-box; gap: 6px; font-size: 12px; }
+.rail .tool[data-tip]::after { display: none; }
+.pill .chip[aria-pressed="true"] { color: var(--bg); }
+.pill-extra { display: flex; align-items: center; gap: 2px; }
+.pill-extra:empty { display: none; }
+.pill .chip { width: auto; min-width: 40px; padding: 0 8px; height: 40px; font-size: 13px; font-weight: 400; color: var(--body); }
+
+/* previous and next: only there when the pointer comes near the side */
+
+/* save as: what comes out, and how big it will be */
+.sv-size { display: flex; align-items: center; gap: 8px; }
+.sv-size .side-label { margin: 0; flex: 1; color: var(--text); }
+.sv-num { width: 62px; height: 28px; box-sizing: border-box; padding: 0 2px; border: 0; border-bottom: 1px solid var(--glass-edge); outline: 0; background: transparent; color: var(--text); font: inherit; font-size: 13px; text-align: center; font-variant-numeric: tabular-nums; }
+.sv-num:focus { border-bottom-color: var(--text); }
+.sv-num, .cp-num input { caret-color: var(--accent); -moz-appearance: textfield; }
+.sv-num::-webkit-inner-spin-button, .cp-num input::-webkit-inner-spin-button { -webkit-appearance: none; }
+.sv-x { font-size: 12px; color: var(--muted); }
+.sv-est { font-size: 12px; line-height: 1.5; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+@media (max-width: 860px) {
+  .meta .lab { max-width: 0; opacity: 0; margin-left: -5px; }
+  .meta [data-tip]::after { display: block !important; }
+  .meta .count { display: none; }
+  [data-tip]::after { display: none; }
+}
+@media (max-width: 720px) {
+  .side { top: auto; left: max(8px, env(safe-area-inset-left, 0px)); right: max(8px, env(safe-area-inset-right, 0px)); bottom: calc(max(8px, env(safe-area-inset-bottom, 0px)) + 62px); width: auto; max-height: 44% !important; transform: translateY(10px); }
+  .dock-row, .side.on ~ .dock-row, .has-rail .dock-row, .has-rail .side.on ~ .dock-row { left: max(8px, env(safe-area-inset-left, 0px)); right: max(8px, env(safe-area-inset-right, 0px)); max-width: none; transform: none; }
+  .pill { flex: 1; overflow-x: auto; scrollbar-width: none; }
+  .rail { display: none; }
+  .pic-nav { display: none !important; }
+}
+/* words on glass: glass can sit over any picture, so they stay dark enough to read on it */
+.chrome, .pill, .pic-nav, .rail, .side, .set, .dlg, .pop, .ask { --muted: color-mix(in srgb, var(--text) 74%, var(--bg)); }
+
+/* zoomed in further than the preview holds: this part, sharp */
+.pic canvas.detail { display: none; }
+.pic canvas.detail.on { display: block; }
+
+/* many pages: a counter instead of a button each */
+.page-at { min-width: 56px; font-size: 13px; font-weight: 400; color: var(--body); text-align: center; font-variant-numeric: tabular-nums; }
+
+/* on paper, only the picture */
+.print-sheet { display: none; }
+@media print {
+  @page { margin: 12mm; }
+  html, body { height: auto; overflow: visible; background: #fff; }
+  body > *:not(.print-sheet) { display: none !important; }
+  .print-sheet { display: block; }
+  .print-sheet canvas, .print-sheet img { display: block; max-width: 100%; max-height: 96vh; margin: 0 auto; }
+  /* the Mac: WebKit's vh is the window's height when printing; the base gives the sheet's (mac_print.rs) */
+  [data-platform="mac"] .print-sheet canvas, [data-platform="mac"] .print-sheet img { max-height: calc(var(--print-h, 100vh) * .96); }
+}

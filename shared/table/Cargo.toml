@@ -1,0 +1,25 @@
+[package]
+name = "dotany-table"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.80"
+publish = false
+description = "Tables as DotAny Sheets reads and writes them, for Sheets and the hub's converter"
+
+[lib]
+name = "dotany_table"
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+# XLS, XLSB, ODS and FODS, read only: values and formulas, never macros
+calamine = "0.38"
+# CSV and TSV in any legacy encoding: detected as Firefox does, written back in the encoding they came in
+chardetng = "1"
+encoding_rs = "0.8"
+# XLSX and XLSM are read by Sheets' page; saving copies every part we don't change byte for byte, so this zip only reads
+# entries, copies them raw and deflates the parts we write. "deflate" is also what calamine asks of zip
+zip = { version = "9", default-features = false, features = ["deflate"] }
+# SQLite databases, read only and never written: SQLite itself is compiled in ("bundled"),
+# public domain, so a Mac build needs nothing from the system. No extension loading, no SQL from the person
+rusqlite = { version = "0.42", default-features = false, features = ["bundled"] }

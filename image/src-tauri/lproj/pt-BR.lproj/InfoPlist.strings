@@ -1,0 +1,6 @@
+/* written by shared/scripts/mac-plist.mjs from shared/web/lang; change the language tables, not this file */
+"NSDesktopFolderUsageDescription" = "Usado para abrir os arquivos selecionados e localizar outros arquivos na mesma pasta.";
+"NSDocumentsFolderUsageDescription" = "Usado para abrir os arquivos selecionados e localizar outros arquivos na mesma pasta.";
+"NSDownloadsFolderUsageDescription" = "Usado para abrir os arquivos selecionados e localizar outros arquivos na mesma pasta.";
+"NSRemovableVolumesUsageDescription" = "Usado para abrir os arquivos selecionados e localizar outros arquivos na mesma pasta.";
+"NSNetworkVolumesUsageDescription" = "Usado para abrir os arquivos selecionados e localizar outros arquivos na mesma pasta.";

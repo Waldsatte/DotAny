@@ -1,0 +1,13 @@
+[package]
+name = "dotany-repack"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.80"
+publish = false
+description = "MKV and AVI films repackaged as MP4 for the Mac's player, without decoding: DotAny Video and Slides on the Mac"
+
+[lib]
+name = "dotany_repack"
+
+# no dependencies: the boxes are written and the containers read by hand, and a film's bytes are never decoded
+[dependencies]

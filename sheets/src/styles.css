@@ -1,0 +1,139 @@
+/* DotAny Sheets: this tool's own sheet, after the family's (shared/web/family.css). The table scrolls under the
+   family's glass, hairlines across and none down, one frame that shows you where you are. Colours and motion come from
+   the family's variables. */
+:root { --pad-r: 0px; --gut: 0px; --head-h: 53px; }
+.is-empty .dock-row, .is-empty .count, .is-empty .sh-tabs, .is-empty .cfind, .is-empty .notice:has(#readOnlyNotice) { display: none !important; }
+.where .name { line-height: 1.4; }
+.meta .count { white-space: nowrap; color: var(--body); font-size: 13px; line-height: 1; font-variant-numeric: tabular-nums; margin-right: 6px; }
+.tb:disabled, .pill .tb:disabled { color: color-mix(in srgb, var(--text) 34%, transparent); pointer-events: none; }
+.sh-tabs[hidden] { display: none; }
+.sh-tabs { flex: 0 1 auto; min-width: 0; margin-left: 2px; }
+.sh-tabs .sg { white-space: nowrap; }
+
+/* the table: hairlines across, none down. The frame shows you where you are */
+#stage { top: 0; overflow: hidden; }
+.sh-stage { position: absolute; inset: 0; overflow: auto; padding: var(--head-h) 0 96px; box-sizing: border-box; scrollbar-width: thin; scrollbar-gutter: stable; outline: 0; transition: padding-top var(--t-3) var(--e-out); }
+.sh-grid { position: relative; min-width: 100%; font-size: 13px; line-height: 1; color: var(--text); }
+.sh-head { position: sticky; top: 0; z-index: 3; background: var(--bg); }
+.sh-letters { position: relative; height: 28px; border-bottom: 1px solid var(--glass-edge); box-sizing: border-box; }
+.sh-corner { position: sticky; left: 0; z-index: 2; display: block; width: 60px; height: 100%; background: var(--bg); }
+.sh-letter { position: absolute; top: 0; bottom: 0; display: flex; align-items: center; justify-content: center; box-sizing: border-box; padding: 0 10px; font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; cursor: default; user-select: none; transition: color var(--t-1) var(--e-out); }
+.sh-letter > span { pointer-events: none; }
+.sh-letter:hover, .sh-letter.active { color: var(--text); }
+.sh-letter.active > span { font-weight: 500; }
+.sh-more { position: absolute; left: 4px; top: 4px; width: 20px; height: 20px; display: grid; place-items: center; border-radius: 5px; color: var(--muted); opacity: 0; transition: opacity var(--t-1) var(--e-out), background-color var(--t-1) var(--e-out), color var(--t-1) var(--e-out); }
+.sh-more svg.i { width: 18px; height: 18px; }
+.sh-letter:hover .sh-more { opacity: 1; }
+.sh-more:hover { background: var(--glass-hover); color: var(--text); }
+.sh-grip { position: absolute; right: -5px; top: 0; bottom: 0; width: 11px; cursor: col-resize; z-index: 1; }
+.sh-grip::after { content: ""; position: absolute; left: 5px; top: 6px; bottom: 6px; width: 1px; background: var(--glass-edge); opacity: 0; transition: opacity var(--t-1) var(--e-out); }
+.sh-letter:hover .sh-grip::after, .resizing .sh-grip::after { opacity: 1; }
+.resizing, .resizing * { cursor: col-resize !important; }
+.sh-frozen { display: none; position: relative !important; transform: none !important; }
+.has-frozen .sh-frozen { display: block; font-weight: 500; }
+.has-frozen .sh-frozen .sh-c { color: var(--text); }
+.sh-c.picked { background: var(--glass-hover); box-shadow: inset 0 -2px 0 var(--text); }
+.sh-body { position: relative; }
+.sh-rows { position: absolute; left: 0; top: 0; right: 0; }
+.sh-row { position: absolute; left: 0; right: 0; top: 0; height: 30px; box-sizing: border-box; border-bottom: 1px solid var(--glass-edge); }
+.sh-no { position: sticky; left: 0; z-index: 1; display: flex; align-items: center; justify-content: flex-end; width: 60px; height: 100%; box-sizing: border-box; padding-right: 10px; background: var(--bg); font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; cursor: default; user-select: none; }
+.sh-c { position: absolute; top: 0; bottom: 0; display: flex; align-items: center; box-sizing: border-box; padding: 0 10px; overflow: hidden; white-space: nowrap; user-select: none; cursor: cell; }
+.sh-c.num { justify-content: flex-end; font-variant-numeric: tabular-nums; }
+.sh-c.bad { color: var(--c-red); }
+.sh-frame { position: absolute; left: 0; top: 0; z-index: 2; box-sizing: border-box; border: 2px solid var(--text); border-radius: 3px; pointer-events: none; transition: transform var(--t-1) var(--e-out), width var(--t-1) var(--e-out), height var(--t-1) var(--e-out); }
+.sh-range { position: absolute; left: 0; top: 0; z-index: 1; background: var(--glass-hover); pointer-events: none; transition: transform var(--t-1) var(--e-out), width var(--t-1) var(--e-out), height var(--t-1) var(--e-out); }
+.sh-range[hidden] { display: none; }
+.sh-handle { position: absolute; left: -5px; top: -5px; z-index: 3; width: 9px; height: 9px; box-sizing: border-box; border-radius: 50%; background: var(--text); box-shadow: 0 0 0 2px var(--bg); cursor: crosshair; transition: transform var(--t-1) var(--e-out); }
+.sh-frame.still, .sh-range.still, .sh-handle.still { transition: none; }
+.sh-edit { position: absolute; z-index: 4; box-sizing: border-box; background: var(--bg); border: 2px solid var(--text); border-radius: 3px; }
+.sh-edit input { box-sizing: border-box; display: block; width: 100%; height: 100%; padding: 0 8px; border: 0; outline: 0; background: transparent; color: var(--text); font: inherit; caret-color: var(--accent); }
+.sh-edit.is-inkfall > input { color: transparent; caret-color: transparent; }
+
+/* the dock: which cell, what's in it, and for several what they add up to */
+.dock-row { position: absolute; z-index: 6; left: calc(50% - (var(--pad-r) + var(--gut)) / 2); bottom: max(16px, env(safe-area-inset-bottom, 0px)); display: flex; align-items: flex-end; gap: 8px; max-width: calc(100% - 24px - var(--pad-r)); transform: translateX(-50%); transition: left var(--t-3) var(--e-out); }
+.dock-row .pill { position: relative; left: auto; right: auto; bottom: auto; transform: none; flex: none; max-width: 100%; flex-direction: column; align-items: stretch; }
+.pill .sep { height: 20px; margin: 0 8px; }
+.pill .tb { height: 40px; min-width: 40px; color: var(--body); }
+.pill [data-tip]::after { top: auto; bottom: calc(100% + 10px); transform: translate(-50%, 3px); }
+.pill [data-tip]:hover::after { transform: translate(-50%, 0); }
+.pill-row { display: flex; align-items: center; gap: 2px; min-width: 0; height: 40px; }
+.grp { display: flex; align-items: center; gap: 2px; }
+.sh-ref { flex: none; padding: 0 12px; font-size: 13px; line-height: 1; white-space: nowrap; font-variant-numeric: tabular-nums; color: var(--muted); }
+.sh-bar { flex: none; height: 40px; }
+.plain-cell .sh-bar { display: none; }
+.sh-bar input { padding: 0 6px; font-size: 13px; }
+.sh-stats { display: none; flex: none; align-items: center; gap: 16px; padding-right: 8px; overflow: hidden; padding-block: 3px; margin-block: -3px; white-space: nowrap; font-size: 13px; line-height: 1; font-variant-numeric: tabular-nums; }
+.sh-stat { display: inline-flex; align-items: baseline; gap: 6px; }
+.sh-stat i { font-style: normal; font-size: 12px; color: var(--muted); }
+.sh-stat b { font-weight: 500; color: var(--text); }
+.many .sh-bar { display: none; }
+.many .sh-stats { display: flex; }
+.sh-viewchip { display: none; flex: none; white-space: nowrap; margin-left: 4px; }
+.viewing .sh-viewchip { display: inline-flex; }
+
+/* the panels */
+.side { top: calc(var(--head-h) + 10px); }
+.side.right { right: max(16px, env(safe-area-inset-right, 0px)); }
+.sh-colbtn { width: 100%; justify-content: space-between; gap: 8px; }
+.sh-colbtn span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sh-colbtn svg.i { width: 14px; height: 14px; }
+/* it may be narrower than its words: the buttons share what's left (in English the panel scrolled sideways) */
+.side .seg { display: flex; min-width: 0; }
+.side .seg .sg { flex: 1 1 auto; min-width: max-content; padding: 0 9px; white-space: nowrap; }
+/* the sort row wraps when its words don't fit the panel (main.js), into rows, as longer option groups do in the family's panels */
+.side .seg { flex-wrap: wrap; row-gap: 2px; }
+.side .seg .pl { bottom: auto; }
+.side .seg.rows { border-radius: 16px; }
+.side .seg.rows .pl { border-radius: 14px; }
+.sh-fsearch { flex: none; height: 30px; }
+.sh-fsearch input { padding: 0; border-bottom: 1px solid var(--glass-edge); }
+.sh-fsearch input:focus { border-bottom-color: var(--text); }
+.sh-fsearch input::placeholder { color: var(--muted); }
+.sh-values { max-height: 240px; overflow: auto; margin: 0 -8px; padding: 0 8px; scrollbar-width: thin; }
+.sh-val { height: 30px; font-size: 13px; }
+.sh-val span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sh-val svg { flex: none; }
+.chips.sh-enc { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+/* facts: the information panel's rows */
+.info-list { display: grid; margin: 0; }
+.info-list div { display: flex; justify-content: space-between; gap: 16px; padding: 8px 0; border-top: 1px solid var(--glass-edge); font-size: 12px; line-height: 1.4; }
+.info-list div:first-child { border-top: 0; padding-top: 0; }
+.info-list dt { flex: none; color: var(--muted); }
+.info-list dd { margin: 0; min-width: 0; text-align: right; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
+
+/* the card's rows */
+.dlg .seg .sg { min-width: 0; }
+.dlg .sv-rows { display: grid; gap: 14px; }
+.dlg .sv-rows > :first-child { margin-top: 16px; }
+
+/* find and replace */
+.cfind { position: absolute; top: calc(var(--head-h) + 10px); right: 16px; z-index: 6; box-sizing: border-box; width: min(480px, calc(100% - 32px)); padding: 6px; border-radius: 12px; background: var(--glass-float); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-edge); box-shadow: var(--glass-shadow); color: var(--text); opacity: 0; pointer-events: none; transform: translateY(-6px) scale(.98); transform-origin: 100% 0; transition: opacity var(--t-1) var(--e-out), transform var(--t-2) var(--e-out); }
+.cfind.on { opacity: 1; pointer-events: auto; transform: none; }
+.f-row { display: flex; align-items: center; gap: 2px; }
+.fi { position: relative; flex: 1; min-width: 40px; height: 28px; font-size: 13px; }
+.fi input { box-sizing: border-box; display: block; width: 100%; height: 100%; padding: 0 6px; border: 0; outline: 0; background: transparent; color: var(--text); font: inherit; caret-color: var(--accent); }
+.f-row .fi { min-width: 0; }
+.cfind .fi input::placeholder { color: var(--muted); }
+.f-count { flex: none; padding: 0 6px; font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.cfind.none .f-count { color: var(--c-red); }
+.f-b { flex: none; position: relative; width: 28px; height: 28px; display: grid; place-items: center; border-radius: 6px; color: var(--body); transition: background-color var(--t-1) var(--e-out), color var(--t-1) var(--e-out), transform var(--t-2) var(--e-out); }
+.f-b:hover { background: var(--glass-hover); color: var(--text); }
+.f-more[aria-pressed="true"] { background: transparent; color: var(--text); transform: rotate(90deg); }
+.f-repbox { display: grid; grid-template-rows: 0fr; transition: grid-template-rows var(--t-3) var(--e-out); }
+.cfind.rep .f-repbox { grid-template-rows: 1fr; }
+.f-rep { min-height: 0; overflow: hidden; padding-left: 30px; gap: 4px; }
+.cfind.rep .f-rep { padding-top: 2px; }
+.fi.is-inkfall > input { color: transparent; caret-color: transparent; }
+
+/* words on glass */
+.cfind { --muted: color-mix(in srgb, var(--text) 74%, var(--bg)); }
+
+@media (max-width: 720px) {
+  .meta .count { display: none; }
+  .dock-row { left: 50%; max-width: calc(100% - 16px); }
+  .pill [data-tip]::after { display: none; }
+  .sh-tabs { display: none; }
+}
+@media (max-width: 640px) {
+  .side.right { top: auto; left: max(8px, env(safe-area-inset-left, 0px)); right: max(8px, env(safe-area-inset-right, 0px)); bottom: calc(max(8px, env(safe-area-inset-bottom, 0px)) + 62px); width: auto; max-height: 50%; transform: translateY(10px); }
+}

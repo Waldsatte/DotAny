@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- written by shared/scripts/mac-plist.mjs from installer/payload.json; change that script, not this file -->
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>en</string>
+	<key>CFBundleLocalizations</key>
+	<array>
+		<string>zh-Hans</string>
+		<string>zh-Hant</string>
+		<string>en</string>
+		<string>ja</string>
+		<string>ko</string>
+		<string>es</string>
+		<string>pt-BR</string>
+		<string>fr</string>
+		<string>de</string>
+	</array>
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.productivity</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>com.dotany.sheets</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>dotany-sheets</string>
+			</array>
+		</dict>
+	</array>
+	<key>NSDesktopFolderUsageDescription</key>
+	<string>Used to open the files you select and locate other files in the same folder.</string>
+	<key>NSDocumentsFolderUsageDescription</key>
+	<string>Used to open the files you select and locate other files in the same folder.</string>
+	<key>NSDownloadsFolderUsageDescription</key>
+	<string>Used to open the files you select and locate other files in the same folder.</string>
+	<key>NSRemovableVolumesUsageDescription</key>
+	<string>Used to open the files you select and locate other files in the same folder.</string>
+	<key>NSNetworkVolumesUsageDescription</key>
+	<string>Used to open the files you select and locate other files in the same folder.</string>
+	<key>CFBundleDocumentTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeName</key>
+			<string>Sheets (xlsm, xlsb, fods, dbf, sqlite, sqlite3, db)</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>LSHandlerRank</key>
+			<string>Default</string>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>xlsm</string>
+				<string>xlsb</string>
+				<string>fods</string>
+				<string>dbf</string>
+				<string>sqlite</string>
+				<string>sqlite3</string>
+				<string>db</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeName</key>
+			<string>Sheets (also opens)</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>LSHandlerRank</key>
+			<string>Alternate</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>org.openxmlformats.spreadsheetml.sheet</string>
+				<string>public.comma-separated-values-text</string>
+				<string>public.tab-separated-values-text</string>
+				<string>com.microsoft.excel.xls</string>
+				<string>org.oasis-open.opendocument.spreadsheet</string>
+			</array>
+		</dict>
+	</array>
+</dict>
+</plist>

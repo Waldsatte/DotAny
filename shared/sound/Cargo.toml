@@ -1,0 +1,27 @@
+[package]
+name = "dotany-sound"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.80"
+publish = false
+description = "Sound as DotAny Audio reads and writes it, for Audio and the hub's converter"
+
+[lib]
+name = "dotany_sound"
+
+[build-dependencies]
+cc = "1"
+
+[dependencies]
+# MP3 and FLAC: the encoders Recorder shares too
+dotany-sound-encode = { path = "../sound-encode" }
+serde = { version = "1", features = ["derive"] }
+lofty = "0.25"
+# writing Ogg Vorbis; MP3 and FLAC come from dotany-sound-encode
+vorbis_rs = "0.5"
+rubato = "5"
+audioadapter-buffers = "5"
+
+# the tests read what the encoders wrote with another decoder: the one Audio and the converter read with
+[dev-dependencies]
+symphonia = { version = "0.6", default-features = false, features = ["mp3", "flac", "ogg", "vorbis"] }

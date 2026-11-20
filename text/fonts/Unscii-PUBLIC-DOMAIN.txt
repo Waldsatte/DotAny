@@ -1,0 +1,7 @@
+Unscii 16 (unscii-16.woff), by Viznut. http://viznut.fi/unscii/
+
+The author's page says: "unscii-16-full" falls under GPL because of how Unifont is licensed; the other variants are in
+the Public Domain.
+
+DotAny Text ships unscii-16 (8 x 16), not the "full" variant: it is in the public domain. It is used to show DOS text
+art (.nfo, .diz, .ans) in its own face.

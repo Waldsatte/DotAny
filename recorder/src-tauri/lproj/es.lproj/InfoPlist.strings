@@ -1,0 +1,7 @@
+/* written by shared/scripts/mac-plist.mjs from shared/web/lang; change the language tables, not this file */
+"NSDesktopFolderUsageDescription" = "Se usa para abrir los archivos seleccionados y encontrar otros archivos en la misma carpeta.";
+"NSDocumentsFolderUsageDescription" = "Se usa para abrir los archivos seleccionados y encontrar otros archivos en la misma carpeta.";
+"NSDownloadsFolderUsageDescription" = "Se usa para abrir los archivos seleccionados y encontrar otros archivos en la misma carpeta.";
+"NSRemovableVolumesUsageDescription" = "Se usa para abrir los archivos seleccionados y encontrar otros archivos en la misma carpeta.";
+"NSNetworkVolumesUsageDescription" = "Se usa para abrir los archivos seleccionados y encontrar otros archivos en la misma carpeta.";
+"NSMicrophoneUsageDescription" = "El micrófono se usa para grabar audio.";

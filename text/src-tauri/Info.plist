@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- written by shared/scripts/mac-plist.mjs from installer/payload.json; change that script, not this file -->
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>en</string>
+	<key>CFBundleLocalizations</key>
+	<array>
+		<string>zh-Hans</string>
+		<string>zh-Hant</string>
+		<string>en</string>
+		<string>ja</string>
+		<string>ko</string>
+		<string>es</string>
+		<string>pt-BR</string>
+		<string>fr</string>
+		<string>de</string>
+	</array>
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.productivity</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>com.dotany.text</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>dotany-text</string>
+			</array>
+		</dict>
+	</array>
+	<key>NSDesktopFolderUsageDescription</key>
+	<string>Used to open the files you select and locate other files in the same folder.</string>
+	<key>NSDocumentsFolderUsageDescription</key>
+	<string>Used to open the files you select and locate other files in the same folder.</string>
+	<key>NSDownloadsFolderUsageDescription</key>
+	<string>Used to open the files you select and locate other files in the same folder.</string>
+	<key>NSRemovableVolumesUsageDescription</key>
+	<string>Used to open the files you select and locate other files in the same folder.</string>
+	<key>NSNetworkVolumesUsageDescription</key>
+	<string>Used to open the files you select and locate other files in the same folder.</string>
+	<key>CFBundleDocumentTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeName</key>
+			<string>Text (md, markdown, jsonc, toml, ini, mjs, ts, tsx, jsx, srt, vtt, nfo, diz, ans)</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>LSHandlerRank</key>
+			<string>Default</string>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>md</string>
+				<string>markdown</string>
+				<string>jsonc</string>
+				<string>toml</string>
+				<string>ini</string>
+				<string>mjs</string>
+				<string>ts</string>
+				<string>tsx</string>
+				<string>jsx</string>
+				<string>srt</string>
+				<string>vtt</string>
+				<string>nfo</string>
+				<string>diz</string>
+				<string>ans</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeName</key>
+			<string>Text (also opens)</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>LSHandlerRank</key>
+			<string>Alternate</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>public.plain-text</string>
+				<string>com.apple.log</string>
+				<string>org.openxmlformats.wordprocessingml.document</string>
+				<string>com.microsoft.word.doc</string>
+				<string>public.rtf</string>
+				<string>org.oasis-open.opendocument.text</string>
+				<string>public.json</string>
+				<string>public.yaml</string>
+				<string>public.xml</string>
+				<string>public.python-script</string>
+				<string>com.netscape.javascript-source</string>
+				<string>public.html</string>
+				<string>public.css</string>
+			</array>
+		</dict>
+	</array>
+</dict>
+</plist>

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- written by shared/scripts/mac-plist.mjs from installer/payload.json; change that script, not this file -->
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>en</string>
+	<key>CFBundleLocalizations</key>
+	<array>
+		<string>zh-Hans</string>
+		<string>zh-Hant</string>
+		<string>en</string>
+		<string>ja</string>
+		<string>ko</string>
+		<string>es</string>
+		<string>pt-BR</string>
+		<string>fr</string>
+		<string>de</string>
+	</array>
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.productivity</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>com.dotany.books</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>dotany-books</string>
+			</array>
+		</dict>
+	</array>
+	<key>NSDesktopFolderUsageDescription</key>
+	<string>Used to open the files you select and locate other files in the same folder.</string>
+	<key>NSDocumentsFolderUsageDescription</key>
+	<string>Used to open the files you select and locate other files in the same folder.</string>
+	<key>NSDownloadsFolderUsageDescription</key>
+	<string>Used to open the files you select and locate other files in the same folder.</string>
+	<key>NSRemovableVolumesUsageDescription</key>
+	<string>Used to open the files you select and locate other files in the same folder.</string>
+	<key>NSNetworkVolumesUsageDescription</key>
+	<string>Used to open the files you select and locate other files in the same folder.</string>
+	<key>CFBundleDocumentTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeName</key>
+			<string>Books (fb2, cbz, djvu, djv, mobi, prc, cbt, cb7, fbz)</string>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>LSHandlerRank</key>
+			<string>Default</string>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>fb2</string>
+				<string>cbz</string>
+				<string>djvu</string>
+				<string>djv</string>
+				<string>mobi</string>
+				<string>prc</string>
+				<string>cbt</string>
+				<string>cb7</string>
+				<string>fbz</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeName</key>
+			<string>Books (also opens)</string>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>LSHandlerRank</key>
+			<string>Alternate</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>org.idpf.epub-container</string>
+			</array>
+		</dict>
+	</array>
+</dict>
+</plist>

@@ -1,0 +1,48 @@
+[package]
+name = "dotany-video"
+version = "1.0.0"
+edition = "2021"
+rust-version = "1.80"
+publish = false
+
+[lib]
+name = "dotany_video_lib"
+crate-type = ["rlib"]
+
+[[bin]]
+name = "dotany-video"
+path = "src/main.rs"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+# No decoder, encoder or container library: mp4.rs and mkv.rs only move bytes. scripts/check-deps.mjs fails the build otherwise.
+[dependencies]
+tauri = { version = "2", features = [] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+# the family's part: the window, atomic saves, settings and recent files, the watcher, fonts and the platform layer
+dotany-base = { path = "../../shared/rust" }
+# the subtitle and cover dialogs
+rfd = { version = "0.15", default-features = false, features = ["common-controls-v6"] }
+
+# only the platform module uses these. `windows` is for Media Foundation's media engine, which plays AVI and WMV with Windows' own
+# decoders; its functions are looked up at run time, so nothing links to Media Foundation. `webview2-com` (already under wry) shares
+# the engine's pictures with the page.
+[target.'cfg(windows)'.dependencies]
+windows = { version = "0.62", features = ["Win32_Foundation", "Win32_Graphics_Imaging", "Win32_Media_MediaFoundation", "Win32_System_Com"] }
+webview2-com = "0.39"
+windows-core = "0.62"
+windows-sys = { version = "0.59", features = ["Win32_Foundation", "Win32_System_LibraryLoader"] }
+
+# the Mac's player won't open an MKV with H.264 or an AVI: the family's repackaging hands it the same samples in a
+# QuickTime film, read from the original as it plays (no decoding, nothing written to the disk)
+[target.'cfg(target_os = "macos")'.dependencies]
+dotany-repack = { path = "../../shared/repack" }
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "s"
+panic = "unwind"
+strip = true

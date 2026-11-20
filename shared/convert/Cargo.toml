@@ -1,0 +1,76 @@
+[package]
+name = "dotany-convert"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.80"
+publish = false
+description = "The hub's converter: one file format to another, beside the original, never over it"
+
+[lib]
+name = "dotany_convert"
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+rayon = "1"
+
+# pictures, as DotAny Image reads and writes them; what a file is, what it carries, the work on pixels and the PCX and
+# ILBM readers are Image's own crate (shared/picture)
+dotany-picture = { path = "../picture" }
+image = { version = "0.25", default-features = false, features = ["bmp", "ico", "jpeg", "png", "tga", "qoi", "pnm", "ff"] }
+gif = { version = "0.14", default-features = false, features = ["std"] }
+tiff = { version = "0.11", default-features = false, features = ["deflate", "lzw", "jpeg", "fax"] }
+libwebp-sys = { version = "0.14", default-features = false, features = ["std", "parallel"] }
+jpeg-encoder = { version = "0.7", default-features = false, features = ["simd", "std"] }
+weezl = "0.1"
+flate2 = "1"
+
+# sound: DotAny Audio's own reading and writing (shared/sound), and what sound/mod.rs reads the files with, as Audio does
+dotany-sound = { path = "../sound" }
+symphonia = { version = "0.6", default-features = false, features = ["mp3", "flac", "ogg", "vorbis", "pcm", "wav", "aiff"] }
+lofty = "0.25"
+memmap2 = "0.9"
+
+# tables: DotAny Sheets' own reading and writing (shared/table)
+dotany-table = { path = "../table" }
+# text encodings: words, and the names in old zips
+chardetng = "1"
+encoding_rs = "0.8"
+
+# words: DotAny Text's own reading and writing (shared/words); regex for its Markdown rules (md.rs), cfb to find a locked
+# Office file, quick-xml for 3D's models
+dotany-words = { path = "../words" }
+quick-xml = "0.41"
+cfb = "0.14"
+regex = { version = "1", default-features = false, features = ["std", "unicode-perl", "unicode-case"] }
+
+# archives: read by DotAny Archive's own reader (shared/unpack), written as Archive packs them
+dotany-unpack = { path = "../unpack" }
+zip = { version = "9", default-features = false, features = ["aes-crypto", "deflate-flate2-zlib-rs", "deflate64", "bzip2", "lzma", "ppmd", "xz", "time"] }
+sevenz-rust2 = { version = "0.24", default-features = false, features = ["aes256", "compress", "bzip2", "deflate", "ppmd", "util"] }
+tar = { version = "0.4", default-features = false }
+
+# models
+gltf = { version = "1", default-features = false, features = ["utils", "names"] }
+
+[target.'cfg(windows)'.dependencies]
+windows-sys = { version = "0.59", features = ["Win32_Foundation", "Win32_Storage_FileSystem", "Win32_System_SystemInformation", "Win32_System_Time"] }
+windows = { version = "0.62", features = ["Data_Pdf", "Foundation", "Graphics_Imaging", "Storage", "Storage_Streams", "UI", "Win32_System_WinRT"] }
+
+# the Mac's side of the same small things: local time, free memory, writing to the disk itself (out.rs, pack/, picture/)
+[target.'cfg(target_os = "macos")'.dependencies]
+libc = "0.2"
+
+[target.'cfg(windows)'.dev-dependencies]
+windows-sys = { version = "0.59", features = ["Win32_System_ProcessStatus", "Win32_System_Threading"] }
+
+[dev-dependencies]
+serde_json = "1"
+cfb = "0.14"
+zip = { version = "9", default-features = false, features = ["deflate-flate2-zlib-rs"] }
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "s"
+panic = "unwind"

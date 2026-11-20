@@ -1,0 +1,197 @@
+/* DotAny Books: this tool's own sheet, after the family's (shared/web/family.css). Nothing but the book, the window's one
+   colour, words at a width a person can read; the family's glass comes only when called. Colours and motion come from
+   the family's variables, and interface sizes from the family's type scale; the book's own sizes are the reader's. */
+/* the reading serif ships with Books (fonts/, SIL OFL 1.1), every weight in one variable font cut into pieces by
+   character: its @font-face rules are fonts/serif/faces.css, which the build adds after this sheet */
+:root { --read-size: 19px; --read-lh: 1.85; --col: 646px; --page-h: 600px; --book-w: 646px;
+  /* the serif is Books' own Noto Serif SC (above); the sans is the family's */
+  --read-serif: "Noto Serif SC", "Source Han Serif SC", "Songti SC", SimSun, serif;
+  --read-sans: "Stack Sans Text", "HarmonyOS Sans SC", "Microsoft YaHei UI", system-ui, sans-serif;
+  --read-ink: color-mix(in srgb, var(--text) 92%, var(--bg)); }
+
+/* the whole window is the book; the top slides away while you read */
+.stage { top: 0; overflow: hidden; }
+.chrome { transition: transform var(--t-3) var(--e-out), opacity var(--t-2) var(--e-out), background-color var(--t-2) var(--e-out), border-color var(--t-2) var(--e-out); transform: translateY(-101%); opacity: 0; }
+.chrome-on .chrome, .is-empty .chrome { transform: none; opacity: 1; }
+/* the Mac: in a window the top stays and the book starts below it (the system's window buttons are not part of the top
+   and could not go with it); it steps aside only in full screen */
+[data-platform="mac"]:not(.frame-full) .chrome { transform: none; opacity: 1; transition: background-color var(--t-2) var(--e-out), border-color var(--t-2) var(--e-out); }
+[data-platform="mac"]:not(.frame-full) .stage { top: 52px; }
+
+.reader { position: absolute; inset: 0; overflow: hidden; }
+.scrolling .reader { overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--tool) transparent; }
+.book-pages .reader { overflow: auto; scrollbar-width: thin; scrollbar-color: var(--tool) transparent; }
+.book-pages .clip { display: none; }
+.clip { position: relative; margin-inline: auto; overflow: hidden; overflow: clip; }
+.scrolling .clip { overflow: visible; padding-block: 88px 40vh; }
+
+/* the page itself */
+.page { font-family: var(--read-serif); font-size: var(--read-size); line-height: var(--read-lh); color: var(--read-ink); text-align: justify; text-spacing-trim: normal; text-autospace: normal; line-break: strict; hanging-punctuation: allow-end; font-kerning: normal; column-width: var(--col); column-gap: 72px; column-fill: auto; overflow-wrap: anywhere; cursor: default; }
+.page { transition: line-height var(--t-3) var(--e-out); }
+.scrolling .page { column-width: auto; column-gap: normal; width: auto; }
+.scrolling .ch + .ch { margin-top: 7em; }
+.sans .page { font-family: var(--read-sans); }
+.page p { margin: 0; text-indent: 2em; orphans: 2; widows: 2; }
+.page h1 + p, .page h2 + p, .page h3 + p, .page figure + p { text-indent: 2em; }
+.page h1, .page h2, .page h3, .page h4 { margin: 0; font-weight: 700; line-height: 1.35; text-align: left; text-indent: 0; text-wrap: balance; break-after: avoid; break-inside: avoid; color: var(--text); }
+.page h1 { font-size: 2em; margin-block: 1.6em 1.2em; }
+.page h2 { font-size: 1.55em; margin-block: 1.6em 1.1em; }
+.page .ch > h1:first-child, .page .ch > h2:first-child, .page .ch > h3:first-child { margin-top: .4em; }
+.page h3 { font-size: 1.2em; margin-block: 1.4em .7em; }
+.page h4 { font-size: 1.05em; margin-block: 1.2em .5em; }
+.page .gap { text-indent: 0; }
+.page blockquote { margin: 1em 0; padding: 0 0 0 1.4em; color: color-mix(in srgb, var(--text) 72%, var(--bg)); }
+.page blockquote p { text-indent: 0; }
+.page .by { text-align: right; text-indent: 0; }
+.page ul, .page ol { margin: .6em 0; padding-left: 2em; }
+.page li p { text-indent: 0; }
+.page hr { width: 4em; margin: 1.6em auto; border: 0; border-top: 1px solid var(--glass-edge); }
+.page figure { margin: 1em 0 1.4em; break-inside: avoid; text-align: center; }
+.page figcaption { margin-top: .6em; font-family: var(--read-sans); font-size: .72em; line-height: 1.5; color: var(--muted); text-align: center; }
+.page img { display: block; max-width: 100%; max-height: calc(var(--page-h) - 2em); height: auto; margin-inline: auto; border-radius: 3px; break-inside: avoid; object-fit: contain; }
+.page table { width: 100%; margin: 1em 0; border-collapse: collapse; font-size: .9em; break-inside: avoid; }
+.page td, .page th { padding: .3em .6em; border-bottom: 1px solid var(--glass-edge); text-align: left; }
+.page pre { font-family: var(--font-mono); font-size: .8em; white-space: pre-wrap; text-align: left; }
+.page code { font-family: var(--font-mono); font-size: .88em; }
+.page sup { font-size: .7em; line-height: 0; }
+.page ::selection { background: var(--sel); }
+.noteref { color: var(--text); text-decoration: none; padding: 0 .12em; cursor: pointer; border-radius: 3px; }
+.noteref:hover { background: var(--glass-hover); }
+.noteref:focus-visible { outline: 1px solid var(--accent); }
+.latin .page { hyphens: auto; }
+.latin .page p { text-indent: 0; }
+.latin .page p + p { text-indent: 1.5em; }
+
+/* one quiet line under the book */
+.foot { position: absolute; z-index: 2; inset: auto 0 0; display: flex; justify-content: space-between; gap: 24px; height: 44px; align-items: center; padding-left: max(24px, env(safe-area-inset-left, 0px)); padding-right: max(24px, env(safe-area-inset-right, 0px)); font-size: 12px; line-height: 1; color: var(--muted); pointer-events: none; font-variant-numeric: tabular-nums; }
+.scrolling .foot { background: linear-gradient(to top, var(--bg), transparent); }
+.foot-l { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.foot-r { flex: none; }
+
+/* comics and scans */
+.plate { position: relative; display: none; min-height: 100%; box-sizing: border-box; padding: 44px 24px; align-items: center; justify-content: center; }
+.book-pages .plate { display: flex; }
+.fit-width .plate { align-items: flex-start; padding-block: 64px 56px; }
+.plate > * { display: block; max-width: none; box-shadow: 0 2px 18px color-mix(in srgb, #000 16%, transparent); }
+
+/* the contents: the family's side panel, on the left, opening at --t-3 */
+.side.left { left: max(16px, env(safe-area-inset-left, 0px)); right: auto; display: flex; flex-direction: column; overflow: hidden; max-height: calc(100% - 53px - 26px); transform: translateX(-16px); will-change: opacity, transform; }
+.side.left.on { transform: none; transition: opacity var(--t-2) var(--e-out), transform var(--t-3) var(--e-out); }
+.side h3 { overflow-wrap: anywhere; }
+.side.left h3:has(+ .side-label:not([hidden])) { margin-bottom: 4px; }
+.side.left > .side-label { margin-bottom: 14px; }
+.side .chip { min-width: 0; white-space: nowrap; }
+.toc-list { position: relative; min-height: 0; flex: 1; margin: 0 -8px; padding: 0 8px; overflow: auto; scrollbar-width: thin; scrollbar-color: var(--tool) transparent; display: flex; flex-direction: column; gap: 2px; }
+.toc-pl { position: absolute; left: 8px; right: 8px; top: 0; border-radius: 7px; background: var(--text); transition: transform var(--t-3) var(--e-out), height var(--t-3) var(--e-out); }
+.toc-row { position: relative; z-index: 1; flex: none; box-sizing: border-box; width: 100%; min-height: 34px; padding: 7px 12px; display: flex; align-items: center; border-radius: 7px; font-size: 13px; line-height: 1.4; color: var(--body); transition: color var(--t-2) var(--e-out), background-color var(--t-1) var(--e-out); }
+.toc-row:hover { background: var(--glass-hover); }
+.toc-row[aria-current="true"] { color: var(--bg); background: transparent; }
+
+/* turning: the sheet that covers or draws away */
+.turn-ghost { position: absolute; z-index: 0; pointer-events: none; }
+.plate-ghost { left: 0; right: 0; bottom: auto; min-height: 100%; }
+.turn-cover { z-index: 1; background: var(--bg); box-shadow: calc(var(--s) * (3000px - var(--ext))) 0 0 3000px var(--bg), calc(var(--s) * (3000px - var(--ext))) 0 56px 3000px color-mix(in srgb, #000 12%, transparent); }
+
+/* a note opens where you are */
+.note { position: absolute; z-index: 7; box-sizing: border-box; padding: 14px 16px 16px; border-radius: 14px; background: var(--glass-float); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-edge); box-shadow: var(--glass-shadow); color: var(--text); opacity: 0; pointer-events: none; transform: translateY(4px); transition: opacity var(--t-1) var(--e-out), transform var(--t-2) var(--e-out); }
+.note.on { opacity: 1; pointer-events: auto; transform: none; }
+.note-h { margin: 0 0 6px; font-size: 12px; line-height: 1.3; color: var(--muted); }
+.note-b { max-height: 240px; overflow: auto; font-family: var(--read-serif); font-size: 15px; line-height: 1.7; }
+.sans .note-b { font-family: var(--read-sans); }
+.note-b p { margin: 0; }
+.note { --muted: color-mix(in srgb, var(--text) 74%, var(--bg)); }
+
+/* find: DotAny PDF's glass (which is Text's), under the top, which stays while it is open */
+.cfind { position: absolute; top: calc(var(--chrome-now, 53px) + 10px); right: 16px; z-index: 6; box-sizing: border-box; width: min(480px, calc(100% - 32px)); padding: 6px; border-radius: 12px; background: var(--glass-float); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-edge); box-shadow: var(--glass-shadow); color: var(--text); opacity: 0; pointer-events: none; transform: translateY(-6px) scale(.98); transform-origin: 100% 0; transition: opacity var(--t-1) var(--e-out), transform var(--t-2) var(--e-out); }
+.cfind.on { opacity: 1; pointer-events: auto; transform: none; }
+.is-empty .cfind { display: none !important; }
+.f-row { display: flex; align-items: center; gap: 2px; }
+.fi { position: relative; flex: 1; min-width: 40px; height: 28px; font-size: 13px; }
+.f-row .fi { min-width: 0; }
+.fi input { box-sizing: border-box; display: block; width: 100%; height: 100%; padding: 0 6px; border: 0; outline: 0; background: transparent; color: var(--text); font: inherit; caret-color: var(--accent); }
+.cfind .fi input::placeholder { color: var(--muted); }
+.fi.is-inkfall > input { color: transparent; caret-color: transparent; }
+.f-count { flex: none; padding: 0 6px; font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.cfind.none .f-count { color: var(--c-red); }
+.f-b { flex: none; position: relative; width: 28px; height: 28px; display: grid; place-items: center; border-radius: 6px; color: var(--body); transition: background-color var(--t-1) var(--e-out), color var(--t-1) var(--e-out), transform var(--t-2) var(--e-out); }
+.f-b:hover { background: var(--glass-hover); color: var(--text); }
+.cfind { --muted: color-mix(in srgb, var(--text) 74%, var(--bg)); }
+/* the two highlights, Text's and PDF's: every match, and the one you're on */
+::highlight(find-hit) { background-color: color-mix(in srgb, var(--text) 13%, transparent); }
+::highlight(find-cur) { background-color: color-mix(in srgb, var(--accent) 34%, transparent); }
+.plate > .plate-hits { position: absolute; display: block; box-shadow: none; pointer-events: none; }
+.p-hit { position: absolute; border-radius: 1px; background: color-mix(in srgb, var(--text) 13%, transparent); }
+.p-hit.cur { background: color-mix(in srgb, var(--accent) 34%, transparent); }
+
+/* ---------- page numbers, going to a page, bookmarks ---------- */
+/* while the page's words are read for its page number, nothing over them is in the way (never drawn: main.js offsetAt) */
+.reading-words :is(.chrome, .dock-row, .foot, .side, .note, .cfind, .cgoto, .turn-ghost, .toast, .set, .pop, .dlg, .ask-wrap) { visibility: hidden !important; }
+/* the quiet line: the page number in place of the per cent, and a 14px bookmark when this page has one */
+.foot-r i, .clock i { font-style: normal; color: var(--muted); }
+.foot-l { flex: 1; }
+.foot-mark { display: none; flex: none; margin: 0 6px 0 auto; color: var(--muted); }
+.foot-mark svg.i { width: 14px; height: 14px; }
+.marked .foot-mark { display: block; animation: fade-in var(--t-2) var(--e-out); }
+.foot { transition: opacity var(--t-2) var(--e-out); }
+.chrome-on .foot { opacity: 0; }
+
+/* the dock: DotAny Video's (video/src/styles.css), resting whenever the top is away */
+.dock-row { position: absolute; z-index: 6; left: 50%; bottom: max(16px, env(safe-area-inset-bottom, 0px)); display: flex; align-items: flex-end; gap: 8px; width: min(820px, calc(100% - 24px)); transform: translateX(-50%); transition: left var(--t-3) var(--e-out), width var(--t-3) var(--e-out), opacity var(--t-2) var(--e-out), transform var(--t-2) var(--e-out); }
+.side.on ~ .dock-row { left: calc(50% - 144px); width: min(820px, calc(100% - 312px)); }
+/* the contents open on the left in Books, so there it steps right */
+.side.left.on ~ .dock-row { left: calc(50% + 144px); }
+.dock-row { opacity: 0; transform: translate(-50%, 10px); pointer-events: none; }
+.chrome-on .dock-row { opacity: 1; transform: translateX(-50%); pointer-events: auto; }
+.is-empty .dock-row { display: none; }
+.dock-row .pill { position: relative; left: auto; right: auto; bottom: auto; z-index: auto; flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: normal; gap: 0; padding: 6px; min-width: 0; max-width: none; box-sizing: border-box; border-radius: 16px; background: var(--glass-float); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-edge); box-shadow: var(--glass-shadow); white-space: nowrap; transform: none; transition: none; }
+.pill-main { display: flex; align-items: center; gap: 2px; min-width: 0; }
+.pill .tb[aria-pressed="true"] { color: var(--bg); }
+.clock { flex: none; min-width: 84px; height: 40px; padding: 0 6px; border-radius: 6px; text-align: center; font-size: 13px; font-weight: 400; line-height: 1; font-variant-numeric: tabular-nums; color: var(--text); transition: background-color var(--t-1) var(--e-out); }
+.clock:hover { background: var(--glass-hover); }
+/* Video's bar, with chapter starts (Recorder's 1px line) and bookmarks (Video's 2px 'now', in the words' colour) on it */
+.bar { position: relative; flex: 1; min-width: 60px; height: 40px; margin: 0 10px; cursor: pointer; touch-action: none; }
+.bar::before { content: ""; position: absolute; left: 0; right: 0; top: 19px; height: 2px; border-radius: 1px; background: var(--glass-edge); }
+.bar-fill { position: absolute; left: 0; top: 19px; height: 2px; border-radius: 1px; background: var(--text); }
+.bar-now { position: absolute; top: 12px; width: 2px; height: 16px; margin-left: -1px; border-radius: 1px; background: var(--accent); }
+.bar-tip { position: absolute; bottom: 100%; margin-bottom: 8px; padding: 4px 8px; border-radius: 6px; background: var(--text); color: var(--bg); font-size: 12px; line-height: 1; font-variant-numeric: tabular-nums; white-space: nowrap; transform: translateX(-50%); pointer-events: none; opacity: 0; transition: opacity var(--t-1) var(--e-out); }
+.bar:hover .bar-tip, .bar.drag .bar-tip { opacity: 1; }
+.bar-ticks { position: absolute; inset: 0; pointer-events: none; }
+.bar-ch { position: absolute; top: 16px; width: 1px; height: 8px; background: var(--glass-edge); }
+.bar-mark { position: absolute; top: 9px; width: 2px; height: 7px; margin-left: -1px; border-radius: 1px; background: var(--text); }
+
+/* Go to Page: DotAny Text's Go to Line (.cgoto, .go-hint), opening above the page number */
+.cgoto { position: absolute; z-index: 9; bottom: calc(max(16px, env(safe-area-inset-bottom, 0px)) + 64px); display: flex; align-items: center; gap: 4px; width: 170px; padding: 4px 10px 4px 4px; box-sizing: border-box; border-radius: 10px; background: var(--glass-float); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-edge); box-shadow: var(--glass-shadow); color: var(--text); opacity: 0; pointer-events: none; transform: translateY(6px) scale(.98); transform-origin: 50% 100%; transition: opacity var(--t-1) var(--e-out), transform var(--t-2) var(--e-out); --muted: color-mix(in srgb, var(--text) 74%, var(--bg)); }
+.cgoto.on { opacity: 1; pointer-events: auto; transform: none; }
+.cgoto .fi input { font-variant-numeric: tabular-nums; }
+.cgoto .fi input::placeholder { color: var(--muted); }
+.go-hint { flex: none; font-size: 12px; color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.is-empty .cgoto { display: none !important; }
+
+/* the contents panel's two pages: Slides' two tabs (.seg.ax-pick) */
+.side.left > .seg.ax-pick { flex: none; display: grid; grid-template-columns: repeat(var(--c), minmax(0, 1fr)); margin-bottom: 12px; }
+.seg.ax-pick .sg { min-width: 0; padding: 0 2px; white-space: nowrap; }
+.side.left.show-marks .toc-list { display: none; }
+.mark-list { display: none; position: relative; min-height: 0; flex: 1; margin: 0 -8px; padding: 0 8px; overflow-x: hidden; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--tool) transparent; flex-direction: column; gap: 2px; }
+.side.left.show-marks .mark-list { display: flex; animation: fade-in var(--t-2) var(--e-out); }
+.side.left:not(.show-marks) .toc-list { animation: fade-in var(--t-2) var(--e-out); }
+/* a bookmark: the contents' row, two lines: the words where it was put, then chapter and page; this page's is dark */
+.mark-row { position: relative; flex: none; display: flex; align-items: center; border-radius: 7px; transition: background-color var(--t-1) var(--e-out); }
+.mark-row:hover { background: var(--glass-hover); }
+.mark-row[aria-current] { background: var(--text); }
+.mark-row[aria-current] .mark-t, .mark-row[aria-current] .mark-del { color: var(--bg); }
+.mark-row[aria-current] .mark-s { color: color-mix(in srgb, var(--bg) 72%, var(--text)); }
+.mark-go { flex: 1; min-width: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 3px; padding: 8px 4px 8px 12px; text-align: left; }
+.mark-t { font-family: var(--read-serif); font-size: 13px; line-height: 1.4; color: var(--body); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.sans .mark-t { font-family: var(--read-sans); }
+.mark-s { display: flex; gap: 8px; font-size: 12px; line-height: 1.3; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.mark-ch { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.mark-p { flex: none; margin-left: auto; }
+.mark-del { margin-right: 4px; opacity: 0; transition: background-color var(--t-1) var(--e-out), color var(--t-1) var(--e-out), opacity var(--t-1) var(--e-out); }
+.mark-row:hover .mark-del, .mark-del:focus-visible { opacity: 1; }
+.mark-none { margin: 4px 4px 0; font-size: 12px; line-height: 1.5; color: var(--muted); }
+
+@media (max-width: 640px) {
+  .dock-row, .side.on ~ .dock-row, .side.left.on ~ .dock-row { left: 50%; width: calc(100% - 16px); }
+  .clock { min-width: 64px; }
+  .side.left { left: max(8px, env(safe-area-inset-left, 0px)); right: max(8px, env(safe-area-inset-right, 0px)); top: 63px; bottom: auto; width: auto; }
+}

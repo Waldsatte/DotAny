@@ -1,0 +1,49 @@
+[package]
+name = "dotany-recorder"
+version = "1.0.0"
+edition = "2021"
+rust-version = "1.87"
+publish = false
+
+[lib]
+name = "dotany_recorder_lib"
+crate-type = ["rlib"]
+
+[[bin]]
+name = "dotany-recorder"
+path = "src/main.rs"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+# the family's part: atomic saves, settings, the watcher, fonts, the platform layer and the window
+[dependencies]
+dotany-base = { path = "../../shared/rust" }
+tauri = { version = "2", features = [] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+# the microphone (cpal), and the ring between its thread and the one writing to disk (rtrb)
+cpal = "0.18"
+rtrb = "0.3"
+# MP3 through LAME, opened from its own DLL beside the exe, and FLAC through libFLAC: the encoders DotAny Audio uses
+# too (shared/sound-encode). Their build puts libmp3lame.dll beside the exe
+dotany-sound-encode = { path = "../../shared/sound-encode" }
+
+# the Mac: AVFoundation's question to the person before the microphone is heard (src/mic_mac.rs); the objc2 crates are
+# already in Tauri's tree there, at the family's versions
+[target.'cfg(target_os = "macos")'.dependencies]
+objc2 = "0.6"
+block2 = "0.6"
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "s"
+panic = "unwind"
+strip = true
+
+# the code that touches samples is built for speed, everything else for size
+[profile.release.package.dotany-recorder]
+opt-level = 3
+[profile.release.package.dotany-sound-encode]
+opt-level = 3

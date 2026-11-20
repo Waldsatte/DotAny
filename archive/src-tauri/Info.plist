@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- written by shared/scripts/mac-plist.mjs from installer/payload.json; change that script, not this file -->
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>en</string>
+	<key>CFBundleLocalizations</key>
+	<array>
+		<string>zh-Hans</string>
+		<string>zh-Hant</string>
+		<string>en</string>
+		<string>ja</string>
+		<string>ko</string>
+		<string>es</string>
+		<string>pt-BR</string>
+		<string>fr</string>
+		<string>de</string>
+	</array>
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.productivity</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>com.dotany.archive</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>dotany-archive</string>
+			</array>
+		</dict>
+	</array>
+	<key>NSDesktopFolderUsageDescription</key>
+	<string>Used to open the files you select and locate other files in the same folder.</string>
+	<key>NSDocumentsFolderUsageDescription</key>
+	<string>Used to open the files you select and locate other files in the same folder.</string>
+	<key>NSDownloadsFolderUsageDescription</key>
+	<string>Used to open the files you select and locate other files in the same folder.</string>
+	<key>NSRemovableVolumesUsageDescription</key>
+	<string>Used to open the files you select and locate other files in the same folder.</string>
+	<key>NSNetworkVolumesUsageDescription</key>
+	<string>Used to open the files you select and locate other files in the same folder.</string>
+	<key>CFBundleDocumentTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeName</key>
+			<string>Archive (7z, rar, bz2, tbz2, tbz, xz, txz, zst, tzst, lzh, lha, cpio, ar, deb, rpm)</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>LSHandlerRank</key>
+			<string>Default</string>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>7z</string>
+				<string>rar</string>
+				<string>bz2</string>
+				<string>tbz2</string>
+				<string>tbz</string>
+				<string>xz</string>
+				<string>txz</string>
+				<string>zst</string>
+				<string>tzst</string>
+				<string>lzh</string>
+				<string>lha</string>
+				<string>cpio</string>
+				<string>ar</string>
+				<string>deb</string>
+				<string>rpm</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeName</key>
+			<string>Archive (also opens)</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>LSHandlerRank</key>
+			<string>Alternate</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>public.zip-archive</string>
+				<string>public.tar-archive</string>
+				<string>org.gnu.gnu-zip-archive</string>
+				<string>org.gnu.gnu-zip-tar-archive</string>
+			</array>
+		</dict>
+	</array>
+</dict>
+</plist>

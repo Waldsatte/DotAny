@@ -1,0 +1,144 @@
+{
+  "_": "What DotAny-Setup.exe carries. dotany-pack reads this, measures every file, and appends them to the installer. Paths in `from` are relative to the repository unless absolute; {build} is DOTANY_BUILD, or else the folder dotany-pack itself was built into, when it sits in {build}/cargo-target-installer/release. The order here is the order on the installer's cards.",
+  "product": "DotAny",
+  "version": "1.0.0",
+  "_claim": "Which types an install makes DotAny's default. never: only listed under Open with (html and htm stay the browser's; ts is also MPEG-TS video, nc NetCDF data, db any program's database, mod some camcorders' MPEG-2 video, snd other programs' sound files). polite: DotAny's only while neither HKCU nor HKLM names another program (code and data files people open with their own editors). Every other type becomes DotAny's, and the program the person had in HKCU comes back on uninstall. A choice made in Windows (UserChoice) is never touched.",
+  "claim": {
+    "never": ["html", "htm", "ts", "nc", "db", "mod", "snd"],
+    "polite": ["py", "js", "mjs", "tsx", "jsx", "css", "json", "jsonc", "yaml", "yml", "toml", "ini", "xml"]
+  },
+  "components": [
+    {
+      "id": "fonts",
+      "shared": true,
+      "files": [
+        { "to": "fonts/HarmonyOS_SansSC_Regular.ttf", "from": "shared/fonts/HarmonyOS_SansSC_Regular.ttf" },
+        { "to": "fonts/HarmonyOS_SansSC_Bold.ttf", "from": "shared/fonts/HarmonyOS_SansSC_Bold.ttf" },
+        { "to": "fonts/StackSansText-wght.ttf", "from": "shared/fonts/StackSansText-wght.ttf" },
+        { "to": "fonts/StackSansHeadline-wght.ttf", "from": "shared/fonts/StackSansHeadline-wght.ttf" },
+        { "to": "fonts/OFL-StackSans.txt", "from": "shared/fonts/OFL-StackSans.txt" },
+        { "to": "fonts/LICENSE-HarmonyOS-Sans.txt", "from": "shared/fonts/LICENSE-HarmonyOS-Sans.txt" },
+        { "to": "fonts/HarmonyOS_Sans_TC.ttf", "from": "shared/fonts/HarmonyOS_Sans_TC.ttf" },
+        { "to": "fonts/NotoSansJP-DotAny-Regular.ttf", "from": "shared/fonts/NotoSansJP-DotAny-Regular.ttf" },
+        { "to": "fonts/NotoSansJP-DotAny-Bold.ttf", "from": "shared/fonts/NotoSansJP-DotAny-Bold.ttf" },
+        { "to": "fonts/Pretendard-Regular.otf", "from": "shared/fonts/Pretendard-Regular.otf" },
+        { "to": "fonts/Pretendard-Bold.otf", "from": "shared/fonts/Pretendard-Bold.otf" },
+        { "to": "fonts/OFL-NotoSansJP.txt", "from": "shared/fonts/OFL-NotoSansJP.txt" },
+        { "to": "fonts/OFL-Pretendard.txt", "from": "shared/fonts/OFL-Pretendard.txt" }
+      ]
+    },
+    {
+      "id": "hub", "name": "DotAny", "required": true, "needs": ["fonts"],
+      "exe": "dotany.exe", "version_from": "hub/src-tauri/tauri.conf.json",
+      "_files": "The hub has to be built before packing; dotany-pack stops if it isn't. Its converter writes MP3 with the same LAME 3.100 as Audio and Recorder, so the three share one libmp3lame.dll, which stays as long as DotAny does",
+      "files": [
+        { "to": "dotany.exe", "from": "{build}/cargo-target-hub/release/dotany.exe" },
+        { "to": "libmp3lame.dll", "from": "{build}/cargo-target-audio/release/libmp3lame.dll" }
+      ],
+      "formats": [],
+      "_cleanup": "The hub's own right-click entry 使用 DotAny 转换 (a switch in its settings; hub/src-tauri/src/system/windows.rs), one per kind of file in KNOWN in hub/src-tauri/src/app.rs; dotany-pack writes one key per {ext}",
+      "cleanup": ["Software\\Classes\\SystemFileAssociations\\.{ext}\\shell\\DotAnyConvert"],
+      "cleanup_exts": ["png", "jpg", "jpeg", "jfif", "webp", "tif", "tiff", "bmp", "gif", "ico", "mp3", "flac", "wav", "aif", "aiff", "ogg", "oga", "xlsx", "xlsm", "xls", "xlsb", "ods", "fods", "dbf", "sqlite", "sqlite3", "csv", "tsv", "tab", "pptx", "ppsx", "potx", "pdf", "docx", "doc", "rtf", "odt", "md", "markdown", "txt", "glb", "gltf", "obj", "stl", "3mf", "fbx", "zip", "7z", "tar", "tgz", "rar", "tga", "qoi", "pbm", "pgm", "ppm", "pnm", "pam", "ff", "farbfeld", "pcx", "iff", "ilbm", "lbm", "ply", "off"]
+    },
+    {
+      "id": "text", "name": "Text", "needs": ["fonts"],
+      "exe": "dotany-text.exe", "version_from": "text/src-tauri/tauri.conf.json",
+      "files": [{ "to": "dotany-text.exe", "from": "{build}/cargo-target-text/release/dotany-text.exe" }],
+      "formats": ["txt", "md", "markdown", "log", "docx", "doc", "rtf", "odt", "json", "jsonc", "yaml", "yml", "toml", "ini", "xml", "py", "js", "mjs", "ts", "tsx", "jsx", "html", "htm", "css", "srt", "vtt", "nfo", "diz", "ans"]
+    },
+    {
+      "id": "image", "name": "Image", "needs": ["fonts"],
+      "exe": "dotany-image.exe", "version_from": "image/src-tauri/tauri.conf.json",
+      "files": [{ "to": "dotany-image.exe", "from": "{build}/cargo-target-image/release/dotany-image.exe" }],
+      "formats": ["jpg", "jpeg", "jfif", "png", "webp", "gif", "bmp", "svg", "ico", "tif", "tiff", "tga", "qoi", "pbm", "pgm", "ppm", "pnm", "pam", "ff", "farbfeld", "pcx", "iff", "ilbm", "lbm"]
+    },
+    {
+      "id": "audio", "name": "Audio", "needs": ["fonts"],
+      "exe": "dotany-audio.exe", "version_from": "audio/src-tauri/tauri.conf.json",
+      "files": [
+        { "to": "dotany-audio.exe", "from": "{build}/cargo-target-audio/release/dotany-audio.exe" },
+        { "to": "libmp3lame.dll", "from": "{build}/cargo-target-audio/release/libmp3lame.dll" }
+      ],
+      "formats": ["mp3", "flac", "wav", "aiff", "aif", "ogg", "oga", "m4a", "mod", "xm", "s3m", "it", "au", "snd", "voc"]
+    },
+    {
+      "id": "video", "name": "Video", "needs": ["fonts"],
+      "exe": "dotany-video.exe", "version_from": "video/src-tauri/tauri.conf.json",
+      "files": [{ "to": "dotany-video.exe", "from": "{build}/cargo-target-video/release/dotany-video.exe" }],
+      "formats": ["mp4", "m4v", "mov", "mkv", "webm", "avi", "wmv"]
+    },
+    {
+      "id": "pdf", "name": "PDF", "needs": ["fonts"],
+      "exe": "dotany-pdf.exe", "version_from": "pdf/src-tauri/tauri.conf.json",
+      "files": [{ "to": "dotany-pdf.exe", "from": "{build}/cargo-target-pdf/release/dotany-pdf.exe" }],
+      "formats": ["pdf"]
+    },
+    {
+      "id": "archive", "name": "Archive", "needs": ["fonts"],
+      "exe": "dotany-archive.exe", "version_from": "archive/src-tauri/tauri.conf.json",
+      "files": [{ "to": "dotany-archive.exe", "from": "{build}/cargo-target-archive/release/dotany-archive.exe" }],
+      "formats": ["zip", "7z", "rar", "tar", "gz", "tgz", "bz2", "tbz2", "tbz", "xz", "txz", "zst", "tzst", "lzh", "lha", "cpio", "ar", "deb", "rpm"],
+      "_cleanup": "Archive's own right-click entries (settings → 界面 → 集成至系统右键菜单, archive/src-tauri/src/shellmenu.rs); they would point at a removed program",
+      "cleanup": [
+        "Software\\Classes\\SystemFileAssociations\\.zip\\shell\\DotAnyArchive.Open",
+        "Software\\Classes\\SystemFileAssociations\\.7z\\shell\\DotAnyArchive.Open",
+        "Software\\Classes\\SystemFileAssociations\\.rar\\shell\\DotAnyArchive.Open",
+        "Software\\Classes\\SystemFileAssociations\\.tar\\shell\\DotAnyArchive.Open",
+        "Software\\Classes\\SystemFileAssociations\\.gz\\shell\\DotAnyArchive.Open",
+        "Software\\Classes\\SystemFileAssociations\\.tgz\\shell\\DotAnyArchive.Open",
+        "Software\\Classes\\SystemFileAssociations\\.bz2\\shell\\DotAnyArchive.Open",
+        "Software\\Classes\\SystemFileAssociations\\.tbz2\\shell\\DotAnyArchive.Open",
+        "Software\\Classes\\SystemFileAssociations\\.tbz\\shell\\DotAnyArchive.Open",
+        "Software\\Classes\\SystemFileAssociations\\.xz\\shell\\DotAnyArchive.Open",
+        "Software\\Classes\\SystemFileAssociations\\.txz\\shell\\DotAnyArchive.Open",
+        "Software\\Classes\\SystemFileAssociations\\.zst\\shell\\DotAnyArchive.Open",
+        "Software\\Classes\\SystemFileAssociations\\.tzst\\shell\\DotAnyArchive.Open",
+        "Software\\Classes\\SystemFileAssociations\\.lzh\\shell\\DotAnyArchive.Open",
+        "Software\\Classes\\SystemFileAssociations\\.lha\\shell\\DotAnyArchive.Open",
+        "Software\\Classes\\SystemFileAssociations\\.cpio\\shell\\DotAnyArchive.Open",
+        "Software\\Classes\\SystemFileAssociations\\.ar\\shell\\DotAnyArchive.Open",
+        "Software\\Classes\\SystemFileAssociations\\.deb\\shell\\DotAnyArchive.Open",
+        "Software\\Classes\\SystemFileAssociations\\.rpm\\shell\\DotAnyArchive.Open",
+        "Software\\Classes\\*\\shell\\DotAnyArchive.Pack",
+        "Software\\Classes\\Directory\\shell\\DotAnyArchive.Pack"
+      ]
+    },
+    {
+      "id": "sheets", "name": "Sheets", "needs": ["fonts"],
+      "exe": "dotany-sheets.exe", "version_from": "sheets/src-tauri/tauri.conf.json",
+      "files": [{ "to": "dotany-sheets.exe", "from": "{build}/cargo-target-sheets/release/dotany-sheets.exe" }],
+      "formats": ["xlsx", "csv", "tsv", "xlsm", "xls", "ods", "xlsb", "fods", "dbf", "sqlite", "sqlite3", "db"]
+    },
+    {
+      "id": "slides", "name": "Slides", "needs": ["fonts"],
+      "exe": "dotany-slides.exe", "version_from": "slides/src-tauri/tauri.conf.json",
+      "files": [{ "to": "dotany-slides.exe", "from": "{build}/cargo-target-slides/release/dotany-slides.exe" }],
+      "formats": ["pptx", "ppsx", "potx", "pptm", "ppsm", "potm"]
+    },
+    {
+      "id": "recorder", "name": "Recorder", "needs": ["fonts"],
+      "exe": "dotany-recorder.exe", "version_from": "recorder/src-tauri/tauri.conf.json",
+      "_files": "Recorder builds the same LAME 3.100 as Audio (only the build time in the header differs), so the two share one libmp3lame.dll",
+      "files": [
+        { "to": "dotany-recorder.exe", "from": "{build}/cargo-target-recorder/release/dotany-recorder.exe" },
+        { "to": "libmp3lame.dll", "from": "{build}/cargo-target-audio/release/libmp3lame.dll" }
+      ],
+      "_formats": "Recorder only writes recordings; WAV opens in Audio",
+      "formats": []
+    },
+    {
+      "id": "books", "name": "Books", "needs": ["fonts"],
+      "exe": "dotany-books.exe", "version_from": "books/src-tauri/tauri.conf.json",
+      "_files": "Books' serif (Noto Serif SC) is packed inside dotany-books.exe, so it comes with Books whenever Books is installed",
+      "files": [{ "to": "dotany-books.exe", "from": "{build}/cargo-target-books/release/dotany-books.exe" }],
+      "_formats": "txt is Text's; Books opens a .txt only when asked to",
+      "formats": ["epub", "fb2", "cbz", "djvu", "djv", "mobi", "prc", "cbt", "cb7", "fbz"]
+    },
+    {
+      "id": "model", "name": "3D", "needs": ["fonts"],
+      "exe": "dotany-model.exe", "version_from": "model/src-tauri/tauri.conf.json",
+      "files": [{ "to": "dotany-model.exe", "from": "{build}/cargo-target-model/release/dotany-model.exe" }],
+      "formats": ["glb", "gltf", "obj", "stl", "3mf", "fbx", "ply", "off", "gcode", "gco", "nc", "vox"]
+    }
+  ]
+}

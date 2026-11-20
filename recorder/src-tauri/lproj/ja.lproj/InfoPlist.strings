@@ -1,0 +1,7 @@
+/* written by shared/scripts/mac-plist.mjs from shared/web/lang; change the language tables, not this file */
+"NSDesktopFolderUsageDescription" = "選択したファイルを開き、同じフォルダ内のほかのファイルを見つけるために使用します。";
+"NSDocumentsFolderUsageDescription" = "選択したファイルを開き、同じフォルダ内のほかのファイルを見つけるために使用します。";
+"NSDownloadsFolderUsageDescription" = "選択したファイルを開き、同じフォルダ内のほかのファイルを見つけるために使用します。";
+"NSRemovableVolumesUsageDescription" = "選択したファイルを開き、同じフォルダ内のほかのファイルを見つけるために使用します。";
+"NSNetworkVolumesUsageDescription" = "選択したファイルを開き、同じフォルダ内のほかのファイルを見つけるために使用します。";
+"NSMicrophoneUsageDescription" = "マイクは音声の録音に使用します。";

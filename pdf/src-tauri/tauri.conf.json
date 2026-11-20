@@ -1,0 +1,32 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "DotAny PDF",
+  "version": "1.0.0",
+  "identifier": "com.dotany.pdf",
+  "build": {
+    "frontendDist": "../dist",
+    "beforeBuildCommand": "node scripts/build.mjs",
+    "beforeDevCommand": "node scripts/build.mjs"
+  },
+  "app": {
+    "windows": [],
+    "security": {
+      "csp": {
+        "default-src": "'self'",
+        "script-src": "'self' 'wasm-unsafe-eval'",
+        "style-src": "'self' 'unsafe-inline'",
+        "font-src": "'self' dotfont: http://dotfont.localhost",
+        "img-src": "'self' data: blob:",
+        "connect-src": "'self' ipc: http://ipc.localhost dotfont: http://dotfont.localhost"
+      }
+    }
+  },
+  "bundle": {
+    "active": false,
+    "icon": [
+      "icons/icon.ico",
+      "icons/icon.png",
+      "icons/icon.icns"
+    ]
+  }
+}

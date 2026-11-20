@@ -1,0 +1,6 @@
+/* written by shared/scripts/mac-plist.mjs from shared/web/lang; change the language tables, not this file */
+"NSDesktopFolderUsageDescription" = "用於打開你選取的檔案，並尋找同一檔案夾中的其他檔案。";
+"NSDocumentsFolderUsageDescription" = "用於打開你選取的檔案，並尋找同一檔案夾中的其他檔案。";
+"NSDownloadsFolderUsageDescription" = "用於打開你選取的檔案，並尋找同一檔案夾中的其他檔案。";
+"NSRemovableVolumesUsageDescription" = "用於打開你選取的檔案，並尋找同一檔案夾中的其他檔案。";
+"NSNetworkVolumesUsageDescription" = "用於打開你選取的檔案，並尋找同一檔案夾中的其他檔案。";

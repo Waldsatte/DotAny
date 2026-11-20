@@ -1,0 +1,55 @@
+[package]
+name = "dotany-slides"
+version = "1.0.0"
+edition = "2021"
+rust-version = "1.80"
+publish = false
+
+[lib]
+name = "dotany_slides_lib"
+crate-type = ["rlib"]
+
+[[bin]]
+name = "dotany-slides"
+path = "src/main.rs"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+# the family's part: atomic saves, settings, the watcher, fonts, the platform layer and the window
+[dependencies]
+dotany-base = { path = "../../shared/rust" }
+tauri = { version = "2", features = [] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+# the system's open dialog, for a picture or a film to put on a slide (the family's own dialogs use the same)
+rfd = { version = "0.15", default-features = false, features = ["common-controls-v6"] }
+
+# Windows' own parts, for three things WebView2 does on request: printing the slides to a PDF, a picture of a slide, and
+# memory shared with the page for films and sounds Windows plays (Media Foundation's media engine, looked up at run time).
+# `webview2-com` and `windows` are already under wry; no decoder or encoder is written here.
+[target.'cfg(windows)'.dependencies]
+windows = { version = "0.62", features = ["Win32_Foundation", "Win32_Graphics_Imaging", "Win32_Media_MediaFoundation", "Win32_System_Com"] }
+webview2-com = "0.39"
+windows-core = "0.62"
+windows-sys = { version = "0.59", features = ["Win32_Foundation", "Win32_System_LibraryLoader"] }
+
+# the Mac's parts (src/mac.rs): WKWebView prints the slides to a PDF and takes a picture of the page, AppKit says where
+# the screens are, and a film WKWebView won't play is repackaged by the family's `dotany-repack` (no decoder). The
+# objc2 crates are already in Tauri's tree there, at the versions the family's base uses
+[target.'cfg(target_os = "macos")'.dependencies]
+dotany-repack = { path = "../../shared/repack" }
+objc2 = "0.6"
+block2 = "0.6"
+objc2-foundation = { version = "0.3", default-features = false, features = ["std", "NSString", "NSData", "NSDictionary", "NSError", "NSGeometry", "NSURL", "NSValue", "NSObjCRuntime"] }
+objc2-app-kit = { version = "0.3", default-features = false, features = ["std", "NSResponder", "NSWindow", "NSView", "NSScreen", "NSImage", "NSImageRep", "NSBitmapImageRep", "NSPrintInfo", "NSPrintOperation", "NSGraphics", "objc2-core-graphics"] }
+objc2-web-kit = { version = "0.3", default-features = false, features = ["std", "block2", "objc2-app-kit", "WKWebView", "WKSnapshotConfiguration", "WKWebViewConfiguration", "WKPreferences"] }
+objc2-core-foundation = { version = "0.3", default-features = false, features = ["std", "CFData", "CFString", "CFCGTypes"] }
+objc2-core-graphics = { version = "0.3", default-features = false, features = ["std", "CGBitmapContext", "CGColorSpace", "CGContext", "CGDataProvider", "CGImage", "CGPDFDocument", "CGPDFPage"] }
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "s"
+panic = "unwind"
+strip = true

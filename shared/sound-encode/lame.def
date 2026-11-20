@@ -1,0 +1,18 @@
+LIBRARY libmp3lame
+EXPORTS
+  get_lame_version
+  lame_init
+  lame_close
+  lame_set_in_samplerate
+  lame_set_out_samplerate
+  lame_set_num_channels
+  lame_set_mode
+  lame_set_brate
+  lame_set_VBR
+  lame_set_quality
+  lame_set_bWriteVbrTag
+  lame_init_params
+  lame_get_brate
+  lame_encode_buffer_ieee_float
+  lame_encode_flush
+  lame_get_lametag_frame

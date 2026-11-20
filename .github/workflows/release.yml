@@ -1,0 +1,370 @@
+# Builds DotAny for release in GitHub's cloud.
+#
+#   Windows  the 12 programs (hub + 11 tools) once each, then DotAny-Setup.exe with dotany-pack. The installer is not
+#            code-signed, so Windows SmartScreen shows "unknown publisher" on first run.
+#   macOS    the same programs as .apps in the DotAny folder, DotAny.dmg and DotAny-mac.zip, on an Apple-silicon runner.
+#            Signed with the Developer ID, notarised and stapled when the Apple secrets are set; otherwise signed ad
+#            hoc (macOS then asks for Open Anyway the first time). They are part of the release either way.
+#   release  only for a tag (v1.0.0): collects everything, writes SHA256SUMS.txt, and drafts a GitHub Release with them,
+#            unsigned. Nothing is published: SHA256SUMS.txt is signed away from GitHub (the last step says why), and
+#            the draft is published by hand after that.
+#
+# Runs ONLY on:  a tag push (git tag v1.0.0 && git push origin v1.0.0), or by hand (Actions > Release > Run workflow).
+#                Never on an ordinary push or pull request.
+#
+# The unit tests inside the source files are part of this repository and run with `cargo test`. The end-to-end tests that
+# drive the real programs, and their sample files, are not part of this repository. This workflow runs neither: it
+# builds and releases.
+#
+# CACHE. A cache made by a run is only readable by runs on the same branch/tag, plus the default branch. Tags can't read
+# each other's caches. So the cache that helps a tag build is the one made by a manual run on main (same Cargo.lock):
+# run the workflow by hand on main once before tagging, and the tag then starts warm.
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      mac:
+        description: Also build the Mac's DotAny.dmg (a tag always does)
+        type: boolean
+        default: false
+      mac_programs:
+        description: 'Mac: which programs, space separated (empty: all twelve; the dmg needs hub among them)'
+        type: string
+        default: ''
+
+# the default for every job; the release job asks for more
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: ${{ !startsWith(github.ref, 'refs/tags/') }}
+
+env:
+  CARGO_TERM_COLOR: always
+  # the Rust release every program is built with, named so a release is not built by whatever "stable" is that day
+  RUST_TOOLCHAIN: '1.97.1'
+  CARGO_INCREMENTAL: '0'
+  # CARGO_TARGET_DIR (one Cargo target folder for every program, inside the checkout; never cached) and
+  # DOTANY_BUILD (where the finished programs go, in the layout installer/payload.json expects) are set by the first
+  # step of each build job, with forward slashes.
+
+jobs:
+  windows:
+    name: Windows (programs + installer)
+    runs-on: windows-latest
+    timeout-minutes: 150
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Folders
+        run: |
+          ws="$(cygpath -m "$GITHUB_WORKSPACE")"
+          echo "CARGO_TARGET_DIR=$ws/.target" >> "$GITHUB_ENV"
+          echo "DOTANY_BUILD=$ws/.build" >> "$GITHUB_ENV"
+
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+
+      - name: Tag matches the version in the installer
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          want="$(node -p "require('./installer/payload.json').version")"
+          if [ "${GITHUB_REF_NAME#v}" != "$want" ]; then
+            echo "::error::The tag is $GITHUB_REF_NAME but installer/payload.json says $want. Change one of them."
+            exit 1
+          fi
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: '*/package-lock.json'
+
+      - name: Rust (MSVC)
+        run: |
+          rustup toolchain install "$RUST_TOOLCHAIN" --profile minimal --no-self-update
+          rustup default "$RUST_TOOLCHAIN"
+          rustc --version
+
+      # The crates as downloaded (cargo checks each against Cargo.lock's checksum), never compiled output: a release is
+      # compiled from source every time, so nothing a cache holds ends up in a program. This costs the compiling of
+      # the third-party crates on every release build (about 10-20 minutes of the Windows job, a similar share of the
+      # Mac's).
+      - name: Cargo cache (restore)
+        id: cargo-cache
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: |
+            ~/.cargo/registry/index
+            ~/.cargo/registry/cache
+            ~/.cargo/git/db
+          key: cargo-windows-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: cargo-windows-
+
+      - name: Build the 12 programs
+        run: bash .github/scripts/build-programs.sh windows
+
+      # The installer: dotany-setup.exe is the small Tauri program, dotany-pack appends every program to it as one zstd
+      # stream and writes manifest.json (versions and SHA-256 of every file) beside it. Same steps as installer/README.md.
+      - name: Build the installer and pack it
+        run: |
+          cargo build --release --locked --manifest-path installer/src-tauri/Cargo.toml
+          mkdir -p "$DOTANY_BUILD/cargo-target-installer/release" out
+          cp "$CARGO_TARGET_DIR/release/dotany-setup.exe" "$DOTANY_BUILD/cargo-target-installer/release/"
+          "$CARGO_TARGET_DIR/release/dotany-pack.exe" --repo "$PWD" --out "$PWD/out"
+          test -f out/DotAny-Setup.exe && test -f out/manifest.json
+          cp "$DOTANY_BUILD/build-report.txt" out/build-report-windows.txt
+          ls -l out
+
+      - name: Checksums
+        working-directory: out
+        run: |
+          sha256sum DotAny-Setup.exe manifest.json | tee SHA256SUMS.txt
+          { echo '### DotAny-Setup.exe'; echo '```'; cat SHA256SUMS.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: windows
+          path: out
+          if-no-files-found: error
+          retention-days: 3
+
+      # saved even when a build failed, and only when there was no exact hit
+      - name: Cargo cache (save)
+        if: always() && steps.cargo-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: |
+            ~/.cargo/registry/index
+            ~/.cargo/registry/cache
+            ~/.cargo/git/db
+          key: cargo-windows-${{ hashFiles('**/Cargo.lock') }}
+
+  # The Mac: every program a real .app (shared/scripts/mac-release.mjs: Tauri's bundler, the shared
+  # fonts in DotAny.app, libmp3lame.dylib in the three that write MP3), the DotAny folder, DotAny.dmg (that folder and a
+  # shortcut to Applications) and DotAny-mac.zip (the folder again: what the hub's updater downloads, update.rs `mac`).
+  # Apple silicon only, macOS 13 or later.
+  #
+  # Runs when chosen by hand (the "mac" box), and on every tag. The repository variable MAC_RELEASE = false
+  # (Settings > Secrets and variables > Actions > Variables) switches it off for tags.
+  #
+  # SIGNED OR NOT. With the Apple secrets below (all six) the .apps are signed with the Developer ID, with the hardened
+  # runtime and each program's entitlements (Recorder: the microphone; the hub, Audio, Recorder: loading a
+  # libmp3lame.dylib a person put there themselves, as LAME's LGPL allows), the dmg is signed, notarised once and
+  # stapled, and the .apps are stapled too before the zip is made. Without the secrets everything is signed ad hoc.
+  # DotAny.dmg and DotAny-mac.zip go into the release either way. An ad-hoc build someone downloaded is refused by macOS
+  # the first time (since macOS 15 only System Settings > Privacy & Security > Open Anyway gets past it).
+  #   The secrets (repository Settings > Secrets and variables > Actions):
+  #     APPLE_CERTIFICATE           base64 of the "Developer ID Application" certificate with its key, exported as .p12
+  #     APPLE_CERTIFICATE_PASSWORD  the password chosen when exporting it
+  #     APPLE_SIGNING_IDENTITY      e.g. "Developer ID Application: Name (TEAMID)"
+  #     APPLE_ID                    the Apple ID's email
+  #     APPLE_APP_PASSWORD          an app-specific password for that Apple ID (account.apple.com > Sign-In and Security)
+  #     APPLE_TEAM_ID               the 10-character team id
+  macos:
+    name: macOS (Apple silicon) .apps, DotAny.dmg, DotAny-mac.zip
+    if: (github.event_name == 'workflow_dispatch' && inputs.mac) || (startsWith(github.ref, 'refs/tags/v') && vars.MAC_RELEASE != 'false')
+    runs-on: macos-latest   # Apple silicon
+    timeout-minutes: 120
+    env:
+      SIGN: ${{ secrets.APPLE_CERTIFICATE != '' && secrets.APPLE_SIGNING_IDENTITY != '' && secrets.APPLE_ID != '' }}
+      # typed by whoever runs the workflow: used from the environment only, never pasted into a script
+      PROGRAMS: ${{ inputs.mac_programs || 'hub text image audio video pdf archive sheets slides recorder books model' }}
+    steps:
+      - name: Folders
+        run: echo "CARGO_TARGET_DIR=$GITHUB_WORKSPACE/.target" >> "$GITHUB_ENV"
+
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: '*/package-lock.json'
+
+      - name: Rust
+        run: |
+          rustup toolchain install "$RUST_TOOLCHAIN" --profile minimal --no-self-update
+          rustup default "$RUST_TOOLCHAIN"
+          rustc --version
+
+      - name: Cargo cache (restore)
+        id: cargo-cache
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: |
+            ~/.cargo/registry/index
+            ~/.cargo/registry/cache
+            ~/.cargo/git/db
+          key: cargo-macos-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: cargo-macos-
+
+      - name: Page dependencies
+        run: |
+          set -f   # the names are split on spaces, never expanded as file patterns
+          for p in $PROGRAMS; do
+            ( cd "$p" && npm ci --no-audit --no-fund )
+          done
+
+      # the Developer ID in a keychain of this run's own, gone at the end of the job
+      - name: Signing keychain
+        if: env.SIGN == 'true'
+        env:
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+        run: |
+          set -euo pipefail
+          KEYCHAIN="$RUNNER_TEMP/build.keychain-db"; KEYCHAIN_PW="$(uuidgen)"
+          echo "$APPLE_CERTIFICATE" | base64 --decode > "$RUNNER_TEMP/cert.p12"
+          security create-keychain -p "$KEYCHAIN_PW" "$KEYCHAIN"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN"
+          security unlock-keychain -p "$KEYCHAIN_PW" "$KEYCHAIN"
+          security import "$RUNNER_TEMP/cert.p12" -P "$APPLE_CERTIFICATE_PASSWORD" -A -t cert -f pkcs12 -k "$KEYCHAIN"
+          security set-key-partition-list -S apple-tool:,apple: -k "$KEYCHAIN_PW" "$KEYCHAIN"
+          security list-keychains -d user -s "$KEYCHAIN" login.keychain-db
+          rm -f "$RUNNER_TEMP/cert.p12"
+
+      # each program: tauri build --bundles app, then signed (inside out) and checked: icon, LSMinimumSystemVersion 13.0,
+      # the nine languages' InfoPlist.strings, the kinds of file and the web address, arm64 only, fonts and LAME where
+      # they belong, codesign --verify --deep --strict. Into out/DotAny.
+      - name: Build the .apps
+        env:
+          IDENTITY: ${{ env.SIGN == 'true' && secrets.APPLE_SIGNING_IDENTITY || '-' }}
+        run: |
+          set -f
+          node shared/scripts/mac-release.mjs $PROGRAMS --out="$PWD/out" --identity="$IDENTITY"
+          du -sh out/DotAny/*.app out/DotAny | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: DotAny.dmg
+        env:
+          IDENTITY: ${{ env.SIGN == 'true' && secrets.APPLE_SIGNING_IDENTITY || '-' }}
+        run: node shared/scripts/mac-release.mjs --dmg --out="$PWD/out" --identity="$IDENTITY"
+
+      # notarise the dmg ONCE (Apple checks every program in it), staple its ticket to the dmg, and staple each .app too
+      # (their tickets came with the dmg's), so the DotAny-mac.zip made next carries them for the hub's updates
+      - name: Notarise and staple
+        if: env.SIGN == 'true'
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_APP_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          set -euo pipefail
+          xcrun notarytool submit out/DotAny.dmg --apple-id "$APPLE_ID" --password "$APPLE_APP_PASSWORD" \
+            --team-id "$APPLE_TEAM_ID" --wait --timeout 1h
+          xcrun stapler staple out/DotAny.dmg
+          xcrun stapler validate out/DotAny.dmg
+          for app in out/DotAny/*.app; do xcrun stapler staple "$app"; done
+          spctl --assess --type open --context context:primary-signature -v out/DotAny.dmg
+          for app in out/DotAny/*.app; do spctl --assess --type execute -v "$app"; done
+
+      - name: DotAny-mac.zip
+        run: |
+          node shared/scripts/mac-release.mjs --zip --out="$PWD/out"
+          mkdir -p release && mv out/DotAny.dmg out/DotAny-mac.zip release/
+          ls -l release
+
+      - name: Drop the signing keychain
+        if: always() && env.SIGN == 'true'
+        run: security delete-keychain "$RUNNER_TEMP/build.keychain-db" || true
+
+      # into the release, signed and notarised or ad hoc (the summary of the run says which)
+      - name: Signed or ad hoc
+        run: |
+          echo "Mac: ${{ env.SIGN == 'true' && 'signed with the Developer ID and notarised' || 'AD HOC signature only (no Apple secrets): macOS asks for Open Anyway the first time' }}" | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: release-macos
+          path: release
+          if-no-files-found: error
+          retention-days: 3
+
+      - name: Cargo cache (save)
+        if: always() && steps.cargo-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: |
+            ~/.cargo/registry/index
+            ~/.cargo/registry/cache
+            ~/.cargo/git/db
+          key: cargo-macos-${{ hashFiles('**/Cargo.lock') }}
+
+  release:
+    name: Draft GitHub Release
+    # the Mac job is skipped only when MAC_RELEASE is false; when it ran it must have passed, as the Windows job must
+    needs: [windows, macos]
+    if: >-
+      always() && startsWith(github.ref, 'refs/tags/v') && needs.windows.result == 'success' &&
+      (needs.macos.result == 'success' || needs.macos.result == 'skipped')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write       # create the release
+      id-token: write       # build provenance attestation
+      attestations: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          path: dist
+          merge-multiple: true
+
+      - name: SHA256SUMS.txt for everything in the release
+        working-directory: dist
+        run: |
+          rm -f SHA256SUMS.txt SHA256SUMS.txt.sig
+          sha256sum * | tee SHA256SUMS.txt
+
+      # a signed statement from GitHub that this exact file was built by this workflow from this commit; anyone can check
+      # it with:  gh attestation verify DotAny-Setup.exe --repo Waldsatte/DotAny
+      # (the step runs only in a repository that is not private, and, for the Mac files, only when DotAny.dmg was built)
+      - uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be # v2.4.0
+        if: ${{ !github.event.repository.private }}
+        with:
+          subject-path: dist/DotAny-Setup.exe
+
+      - uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be # v2.4.0
+        if: ${{ !github.event.repository.private && hashFiles('dist/DotAny.dmg') != '' }}
+        with:
+          subject-path: |
+            dist/DotAny.dmg
+            dist/DotAny-mac.zip
+
+      # The hub also asks https://dotany.app/releases/latest/<file> for the same files by the same names, before GitHub
+      # (hub/src-tauri/src/update.rs, PLACES), and trusts a file from either only when it passes the same signature and
+      # SHA-256 checks. This workflow uploads nothing there.
+
+      - name: Draft the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="$GITHUB_REF_NAME"
+          if gh release view "$tag" >/dev/null 2>&1; then
+            gh release upload "$tag" dist/* --clobber
+            # a signature made for the files just replaced would no longer match them
+            gh release delete-asset "$tag" SHA256SUMS.txt.sig --yes 2>/dev/null || true
+          else
+            gh release create "$tag" dist/* --draft --verify-tag --title "DotAny ${tag#v}" \
+              --notes-file .github/release-notes.md --generate-notes
+          fi
+
+      # NOT SIGNED HERE. The hub installs nothing whose SHA256SUMS.txt lacks a good SHA256SUMS.txt.sig by a key it
+      # trusts, and that key is never given to GitHub: anyone able to push to this repository or run its workflows
+      # could otherwise get a malicious update signed. So the draft is not a release until SHA256SUMS.txt is signed
+      # on the computer that holds the key (.github/scripts/sign-update.mjs) and SHA256SUMS.txt.sig is added to the
+      # draft. Published without it, the hub refuses the release and keeps asking for one it can verify.
+      - name: Not complete until signed
+        run: |
+          {
+            echo "### Drafted $GITHUB_REF_NAME, NOT SIGNED"
+            echo 'This release is not complete until SHA256SUMS.txt is signed and SHA256SUMS.txt.sig is added to it.'
+            echo 'Do not publish it before that: the hub refuses a release without a valid signature.'
+            echo '```'
+            cat dist/SHA256SUMS.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"

@@ -1,0 +1,45 @@
+[package]
+name = "dotany-text"
+version = "1.0.0"
+edition = "2021"
+rust-version = "1.80"
+publish = false
+
+[lib]
+name = "dotany_text_lib"
+crate-type = ["rlib"]
+
+[[bin]]
+name = "dotany-text"
+path = "src/main.rs"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = ["protocol-asset"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+# the family's part: the window, atomic saves, settings and recent files, the watcher, fonts and the platform layer
+dotany-base = { path = "../../shared/rust" }
+chardetng = "0.1"
+encoding_rs = "0.8"
+memchr = "2"
+regex = { version = "1", default-features = false, features = ["std", "unicode-perl", "unicode-case"] }
+rfd = { version = "0.15", default-features = false, features = ["common-controls-v6"] }
+similar = { version = "2", default-features = false }
+# Word files, and the doc, rtf and odt it reads: the hub's converter uses the same crate
+dotany-words = { path = "../../shared/words" }
+
+# only the tests use it: to mark a file hidden and system, as Windows itself can
+[target.'cfg(windows)'.dev-dependencies]
+windows-sys = { version = "0.59", features = ["Win32_Storage_FileSystem"] }
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "s"
+# as every other program: a panic in one command fails that command, not the whole program (crash.log keeps it);
+# a plain sync command still ends it, and a lock the command held stays poisoned (shared/README.md, "A panic and the locks")
+panic = "unwind"
+strip = true

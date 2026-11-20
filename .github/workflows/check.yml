@@ -1,0 +1,89 @@
+# The check on every push to main and every pull request: each program's page builds, and the code is laid out as the
+# repository's settings say (Prettier for JavaScript, rustfmt for Rust). Linux, a few minutes.
+#
+# The unit tests inside the source files are part of this repository and run with `cargo test`. The end-to-end tests that
+# drive the real programs, and their sample files, are not part of this repository. This check runs neither; the
+# programs themselves are built by the Release workflow, on Windows and macOS.
+name: Check
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '**'
+      - '!**/*.png'
+      - '!**/*.jpg'
+      - '!**/*.gif'
+      - '!**/*.webp'
+      - '!.github/release-notes.md'
+  pull_request:
+    paths:
+      - '**'
+      - '!**/*.png'
+      - '!**/*.jpg'
+      - '!**/*.gif'
+      - '!**/*.webp'
+      - '!.github/release-notes.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: check-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  linux:
+    name: Linux (page builds, layout)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            */package-lock.json
+            shared/starter/package-lock.json
+
+      # Building a page lists the Rust crates in its licence page (cargo metadata), which downloads their sources.
+      - name: Cargo registry cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry/index
+            ~/.cargo/registry/cache
+            ~/.cargo/git/db
+          key: cargo-registry-linux-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: cargo-registry-linux-
+
+      - name: Tools
+        run: node --version && npm --version && cargo --version && (cargo fmt --version || rustup component add rustfmt)
+
+      # Every program's page: npm ci (exactly package-lock.json), then its page build. One failing doesn't stop the others.
+      - name: Page builds
+        run: |
+          failed=""
+          for dir in hub text image audio video pdf archive sheets slides books model recorder shared/starter; do
+            echo "::group::$dir"
+            ( cd "$dir" && npm ci --no-audit --no-fund && node scripts/build.mjs ) || failed="$failed $dir"
+            echo "::endgroup::"
+          done
+          # a generated file (licence notices, icons) that the build wrote differently: the committed copy is out of date
+          git status --short
+          if [ -n "$failed" ]; then echo "::error::page build failed:$failed"; exit 1; fi
+
+      # The version is pinned: another version may lay out the same code differently.
+      - name: Layout (JavaScript)
+        run: npx --yes prettier@3.10.1 --check .
+
+      - name: Layout (Rust)
+        run: |
+          failed=""
+          for m in $(git ls-files 'Cargo.toml' '*/Cargo.toml' | grep -v '/vendor/'); do
+            cargo fmt --check --manifest-path "$m" || failed="$failed ${m%/Cargo.toml}"
+          done
+          if [ -n "$failed" ]; then echo "::error::not as rustfmt.toml says (run cargo fmt there):$failed"; exit 1; fi

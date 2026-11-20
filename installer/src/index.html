@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DotAny</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<!-- the installer's four steps, and the uninstaller's two -->
+<div class="win">
+  <div class="top" data-tauri-drag-region>
+    <span class="brand" data-tauri-drag-region>DotAny</span>
+    <div class="wbs">
+      <button type="button" class="b ghost wb" id="min" data-t-label="最小化"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/></svg></button>
+      <button type="button" class="b ghost wb" id="close" data-t-label="关闭"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+    </div>
+  </div>
+
+  <div class="body" id="body">
+
+    <section id="choose" hidden>
+      <h1 data-t="安装 DotAny"></h1>
+      <p class="label first" data-t="安装方式"></p>
+      <div class="modes">
+        <button type="button" class="card mode" id="full" aria-pressed="true">
+          <span class="sub num"><span id="fullMb"></span></span>
+          <b class="big" data-t="完整安装"></b>
+          <span class="sub note" id="fullNote"></span>
+        </button>
+        <button type="button" class="card mode" id="pick" aria-pressed="false">
+          <span class="sub num"><span id="pickMb"></span></span>
+          <b class="big" data-t="自定义"></b>
+          <span class="sub note" data-t="按需选择你常用的工具组件"></span>
+        </button>
+      </div>
+      <p class="label" data-t="安装路径"></p>
+      <div class="where">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>
+        <span class="path" id="path"></span>
+        <button type="button" class="b ghost change" id="change" data-t="更改"></button>
+      </div>
+      <div class="foot">
+        <span class="need" id="need"></span>
+        <button type="button" class="b pri big-btn" id="next"><span id="nextWord"></span></button>
+      </div>
+    </section>
+
+    <section id="custom" hidden>
+      <h1 data-t="选择组件"></h1>
+      <div class="tools" id="tools"></div>
+      <div class="foot">
+        <span class="need" id="customNeed"></span>
+        <div class="btns">
+          <button type="button" class="b soft big-btn" id="back" data-t="返回"></button>
+          <button type="button" class="b pri big-btn" id="install" data-t="安装"></button>
+        </div>
+      </div>
+    </section>
+
+    <section id="installing" hidden>
+      <h1 data-t="正在安装"></h1>
+      <div class="now">
+        <span id="nowName"></span>
+        <span class="pct" id="pct"></span>
+      </div>
+      <div class="line"><i id="bar"><i></i></i></div>
+      <div class="rows" id="rows"></div>
+      <div class="foot end">
+        <button type="button" class="b soft big-btn" id="cancel" data-t="取消"></button>
+      </div>
+    </section>
+
+    <section id="done" hidden>
+      <div class="title">
+        <svg class="seal" viewBox="0 0 24 24" role="img" data-t-label="完成"><circle cx="12" cy="12" r="10" transform="rotate(-90 12 12)"/><path d="M8 12l2.5 2.5L16 9"/></svg>
+        <h1 data-t="安装完成"></h1>
+      </div>
+      <p class="line-note" id="doneWord"></p>
+      <div class="shelf" id="shelf"></div>
+      <button type="button" class="switch" role="switch" aria-checked="true" id="auto">
+        <span class="sw-words"><b data-t="开机时自动启动 DotAny"></b><small data-t="随系统在后台静默就绪，让各款工具即点即开。"></small></span>
+        <i class="track"><i class="knob"></i></i>
+      </button>
+      <div class="foot end">
+        <div class="btns">
+          <button type="button" class="b soft big-btn" id="finish" data-t="完成"></button>
+          <button type="button" class="b pri big-btn" id="openHub" data-t="启动 DotAny"></button>
+        </div>
+      </div>
+    </section>
+
+    <section id="remove" hidden>
+      <h1 data-t="卸载 DotAny"></h1>
+      <p class="line-note" id="removeWord"></p>
+      <div class="shelf" id="removeShelf"></div>
+      <button type="button" class="switch" role="switch" aria-checked="false" id="settings">
+        <span class="sw-words"><b data-t="清除配置与历史记录"></b><small data-t="移除各款工具的偏好设置与最近打开列表，你的个人文件不受任何影响。"></small></span>
+        <i class="track"><i class="knob"></i></i>
+      </button>
+      <div class="foot">
+        <span class="need" id="removeNeed"></span>
+        <div class="btns">
+          <button type="button" class="b soft big-btn" id="keep" data-t="取消"></button>
+          <button type="button" class="b pri big-btn" id="drop" data-t="卸载"></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- the update mode (the hub's Install and Update): open programs are closed first, then straight to Installing -->
+    <section id="update" hidden>
+      <h1 data-t="更新 DotAny"></h1>
+      <p class="line-note" id="updateWord"></p>
+      <div class="shelf" id="updateShelf"></div>
+      <div class="foot">
+        <span class="need" id="updateNeed"></span>
+        <div class="btns">
+          <button type="button" class="b soft big-btn" id="updateCancel" data-t="取消"></button>
+          <button type="button" class="b pri big-btn" id="updateGo" data-t="继续"></button>
+        </div>
+      </div>
+    </section>
+
+    <section id="removed" hidden>
+      <div class="title">
+        <svg class="seal" viewBox="0 0 24 24" role="img" data-t-label="完成"><circle cx="12" cy="12" r="10" transform="rotate(-90 12 12)"/><path d="M8 12l2.5 2.5L16 9"/></svg>
+        <h1 data-t="卸载完成"></h1>
+      </div>
+      <p class="line-note" id="removedWord"></p>
+      <div class="foot end">
+        <button type="button" class="b pri big-btn" id="bye" data-t="完成"></button>
+      </div>
+    </section>
+
+  </div>
+</div>
+<script src="main.js"></script>
+</body>
+</html>

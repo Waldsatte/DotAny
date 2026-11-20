@@ -1,0 +1,47 @@
+[package]
+name = "dotany-pdf"
+version = "1.0.0"
+edition = "2021"
+rust-version = "1.88"
+publish = false
+
+[lib]
+name = "dotany_pdf_lib"
+crate-type = ["rlib"]
+
+[[bin]]
+name = "dotany-pdf"
+path = "src/main.rs"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+# the family's part: atomic saves, settings, the watcher, fonts, the platform layer and the window
+[dependencies]
+dotany-base = { path = "../../shared/rust" }
+tauri = { version = "2", features = [] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+# Reading and writing the PDF itself: lopdf (MIT). It decrypts with the password the person typed and encrypts the same
+# way again, and appends changes after the original bytes, so what wasn't edited stays as it was.
+lopdf = { version = "0.46", default-features = false }
+# New words written into a PDF carry a subset of the family's font: ttf-parser reads it, subsetter (typst) cuts it down
+ttf-parser = { version = "0.25", default-features = false, features = ["std", "opentype-layout", "variable-fonts"] }
+subsetter = { version = "0.2", features = ["variable-fonts"] }
+# Smaller files: pictures in the PDF read and written again as JPEG; PNG and JPG pages added in the pages view
+image = { version = "0.25", default-features = false, features = ["png", "jpeg"] }
+# Word: a .docx is a ZIP of a few XML parts, written here by hand
+zip = { version = "9", default-features = false, features = ["deflate"] }
+# the system's open dialog, for PDFs and pictures to add as pages and a picture of a signature (the family's own dialogs use the same)
+rfd = { version = "0.15", default-features = false, features = ["common-controls-v6"] }
+
+# the process's memory, so that a test can check how a large file is handled
+[target.'cfg(windows)'.dependencies]
+windows-sys = { version = "0.59", features = ["Win32_Foundation", "Win32_System_ProcessStatus", "Win32_System_Threading"] }
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "s"
+panic = "unwind"
+strip = true

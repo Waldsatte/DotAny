@@ -1,0 +1,296 @@
+/* DotAny Slides: this tool's own sheet, after the family's (shared/web/family.css). Colours and motion come from the
+   family's variables; sizes follow the family's type scale, except inside .slide, which is the file's own look. */
+/* Layout: one slide on the family's paper, under the family's glass */
+html, body { height: 100%; }
+#app { overflow: hidden; --head-h: 53px; }
+:root { --pad-r: 0px; --gut: 0px; }
+.is-empty .dock-row { display: none !important; }
+.is-empty .dot { visibility: hidden; }
+.where .name { line-height: 1.4; }
+.tb.hot, .tb.hot:hover { background: var(--text); color: var(--bg); }
+.meta .tb, .meta .count { color: var(--body); }
+.meta .count { white-space: nowrap; }
+.meta .tb.hot, .meta .tb[aria-pressed="true"] { color: var(--bg); }
+.tb:disabled, .pill .tb:disabled { color: color-mix(in srgb, var(--text) 34%, transparent); pointer-events: none; }
+
+.stage { position: absolute; inset: 0; isolation: isolate; overflow: hidden; padding: calc(var(--chrome-now, 53px) + 16px) calc(var(--pad-r) + 24px) 96px 24px; box-sizing: border-box; outline: 0; }
+.pages { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; }
+.pg { position: relative; flex: none; display: none; background: #fff; box-shadow: 0 1px 2px color-mix(in srgb, #000 12%, transparent), 0 2px 18px color-mix(in srgb, #000 10%, transparent); }
+.pg.cur { display: block; }
+.pg.leaving { display: block; position: absolute; z-index: -1; }
+.pg-in { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+.pg-no { display: none; align-items: center; justify-content: center; gap: 5px; position: absolute; left: 0; right: 0; top: calc(100% + 10px); font-size: 12px; line-height: 1; color: var(--muted); font-variant-numeric: tabular-nums; }
+.pg-no svg.i { width: 14px; height: 14px; }
+
+/* the pages view: the same slides, smaller, in rows */
+.flipping .stage { transition: none; }
+.pages-mode .stage { overflow: auto; padding: calc(var(--chrome-now, 53px) + 16px) calc(var(--pad-r) + 32px) 96px 32px; scrollbar-width: thin; scrollbar-gutter: stable; }
+.pages-mode .pages { flex-wrap: wrap; justify-content: center; align-items: flex-start; align-content: flex-start; gap: 44px 28px; height: auto; max-width: 1180px; margin: 0 auto; }
+.pages-mode .pg { display: block; cursor: default; }
+.pages-mode .pg .slide { pointer-events: none; user-select: none; }
+.pages-mode .pg-no { display: flex; }
+.pg-in { transition: opacity var(--t-2) var(--e-out); }
+.pages-mode .pg.hid .pg-in { opacity: .42; }
+.pg::after { content: ""; position: absolute; inset: -5px; box-sizing: border-box; border: 2px solid var(--text); border-radius: 5px; opacity: 0; pointer-events: none; transition: opacity var(--t-1) var(--e-out); }
+.pages-mode .pg:not(.on):hover::after { opacity: .28; }
+.pages-mode .pg.cur .pg-no { color: var(--text); font-weight: 500; }
+.pg-ghost { position: fixed; z-index: 0; display: block; pointer-events: none; overflow: visible; }
+.pg-ghost::after { display: none; }
+.pages-mode .pic-nav { opacity: 0; pointer-events: none; }
+.pic-nav.tb { transition: opacity var(--t-2) var(--e-out), background-color var(--t-1) var(--e-out), color var(--t-1) var(--e-out); }
+
+/* a slide: 1 unit is 1 point. Nothing of the family's reaches in here, a file's look is its own */
+.slide { position: relative; overflow: hidden; color: #000; font-size: 18px; line-height: 1.2; text-align: left; user-select: text; cursor: default; -webkit-font-smoothing: auto; }
+.slide ::selection { background: color-mix(in srgb, var(--c-blue) 34%, transparent); }
+.slide .x-s { position: absolute; }
+.slide .x-g { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; }
+.slide .x-tb { position: absolute; inset: 0; }
+.slide .x-t { position: absolute; inset: 0; box-sizing: border-box; display: flex; flex-direction: column; }
+.slide .x-t p { position: relative; margin: 0; padding: 0; }
+.slide .x-t > p, .slide .x-cell p { width: auto; }
+.slide .x-bu { position: absolute; top: 0; text-indent: 0; user-select: none; }
+.slide .x-pin { position: absolute; inset: 0; overflow: hidden; }
+.slide .x-pin img { position: absolute; max-width: none; user-select: none; }
+.slide .x-pin.x-none { background: color-mix(in srgb, #808080 16%, transparent); }
+.slide table { border-collapse: collapse; table-layout: fixed; }
+.slide td { box-sizing: border-box; overflow: hidden; }
+.slide .x-cell { position: static; }
+.slide .x-link { cursor: pointer; }
+
+/* editing a slide: one frame, the family's dots, a thin line where things line up */
+.ed-frame { position: absolute; z-index: 4; box-sizing: border-box; border: 1.5px solid var(--text); outline: 1px solid var(--bg); pointer-events: none; border-radius: 1px; }
+.ed-h { position: absolute; width: 9px; height: 9px; box-sizing: border-box; border-radius: 50%; background: var(--text); box-shadow: 0 0 0 2px var(--bg); pointer-events: auto; }
+.ed-nw { left: -5.5px; top: -5.5px; cursor: nwse-resize; } .ed-n { left: calc(50% - 4.5px); top: -5.5px; cursor: ns-resize; } .ed-ne { right: -5.5px; top: -5.5px; cursor: nesw-resize; } .ed-e { right: -5.5px; top: calc(50% - 4.5px); cursor: ew-resize; } .ed-se { right: -5.5px; bottom: -5.5px; cursor: nwse-resize; } .ed-s { left: calc(50% - 4.5px); bottom: -5.5px; cursor: ns-resize; } .ed-sw { left: -5.5px; bottom: -5.5px; cursor: nesw-resize; } .ed-w { left: -5.5px; top: calc(50% - 4.5px); cursor: ew-resize; }
+.ed-rot { left: calc(50% - 4.5px); top: -26px; cursor: grab; }
+.ed-rot::after { content: ""; position: absolute; left: 4px; top: 9px; width: 1px; height: 12px; background: var(--text); }
+.ed-h { transition: opacity var(--t-1) var(--e-out); }
+.ed-frame.texting .ed-h { opacity: 0; pointer-events: none; }
+.ed-frame.glide { transition: left var(--t-1) var(--e-out), top var(--t-1) var(--e-out), width var(--t-1) var(--e-out), height var(--t-1) var(--e-out), transform var(--t-1) var(--e-out); }
+.ed-guide { position: absolute; z-index: 3; background: var(--accent); pointer-events: none; animation: show-in var(--t-1) var(--e-out); }
+.ed-gx { top: 0; bottom: 0; width: 1px; } .ed-gy { left: 0; right: 0; height: 1px; }
+.slide .x-top { cursor: move; }
+.slide .x-t[contenteditable="true"] { cursor: text; outline: 0; caret-color: var(--accent); user-select: text; }
+.pages-mode .slide .x-top { cursor: default; }
+.slide .x-hint { opacity: .42; }
+.pages-mode .x-hint, .show .x-hint, .pv-paper .x-hint, .pg-ghost .x-hint { display: none; }
+.slide .x-t > p > span[data-rk] { white-space: pre-wrap; }
+.ed-bar { position: fixed; z-index: 30; display: flex; align-items: center; gap: 2px; padding: 4px; box-sizing: border-box; border-radius: 12px; background: var(--glass-float); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-edge); box-shadow: var(--glass-shadow); opacity: 0; pointer-events: none; transform: translateY(4px); transition: opacity var(--t-1) var(--e-out), transform var(--t-1) var(--e-out); }
+.ed-bar.on { opacity: 1; pointer-events: auto; transform: none; }
+.ed-bar.moving { transition: opacity var(--t-1) var(--e-out), transform var(--t-1) var(--e-out), left var(--t-2) var(--e-out), top var(--t-2) var(--e-out); }
+.ed-bar .tb { width: 32px; height: 32px; padding: 0; }
+.ed-bar .sep { height: 18px; margin: 0 4px; }
+.ed-bar [data-tip]::after { top: auto; bottom: calc(100% + 10px); transform: translate(-50%, 3px); }
+.ed-bar [data-tip]:hover::after { transform: translate(-50%, 0); }
+.ed-sz { min-width: 26px; text-align: center; font-size: 13px; line-height: 1; color: var(--text); font-variant-numeric: tabular-nums; }
+.swatches { display: grid; grid-template-columns: repeat(5, 24px); gap: 6px; padding: 8px; }
+.pop .swatch { transition: box-shadow var(--t-1) var(--e-out); width: 24px; height: 24px; min-width: 0; padding: 0; border-radius: 50%; box-shadow: inset 0 0 0 1px var(--glass-edge); }
+.pop .swatch:hover { box-shadow: inset 0 0 0 2px var(--text); background-clip: padding-box; }
+
+/* films and sounds in place */
+.slide .x-play { position: absolute; left: calc(50% - var(--z) / 2); top: calc(50% - var(--z) / 2); width: var(--z); height: var(--z); border-radius: 50%; background: color-mix(in srgb, #000 42%, transparent); cursor: pointer; }
+.slide .x-play::after { content: ""; position: absolute; left: 38%; top: 28%; border-style: solid; border-width: calc(var(--z) * .22) 0 calc(var(--z) * .22) calc(var(--z) * .36); border-color: transparent transparent transparent #fff; }
+.slide .x-play { transition: opacity var(--t-1) var(--e-out); }
+.slide .x-on .x-play { opacity: 0; pointer-events: none; }
+.slide .x-player { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: fill; background: #000; }
+.slide audio.x-player { display: none; }
+.slide .x-line { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: var(--accent); transform: scaleX(0); transform-origin: 0 50%; }
+.pages-mode .x-play, .pv-paper .x-play { display: none; }
+
+/* the pages view's dock */
+.pages-head { align-items: center; gap: 6px; padding: 0 0 4px 8px; }
+.pages-gap { flex: 1; min-width: 24px; }
+.pages-head .btn { flex: none; white-space: nowrap; }
+.pages-only { display: none !important; }
+.pages-mode .pages-only { display: flex !important; }
+.pages-mode .read-only { display: none !important; }
+.pick-info { padding: 0 8px; font-size: 13px; line-height: 1; white-space: nowrap; font-variant-numeric: tabular-nums; color: var(--text); }
+.grp { display: flex; align-items: center; gap: 2px; }
+.pages-mode .pill-row .tb.has-lab { gap: 7px; padding: 0 14px 0 12px; font-size: 13px; font-weight: 400; width: auto; }
+.pages-mode #playBtn { margin-right: auto; }
+.pages-mode .pill .has-lab[data-tip]::after { display: none; }
+.stack-lab { display: none; }
+.pages-mode .stack-lab { display: block; }
+.pages-mode .stage { padding-bottom: 124px; }
+.pages-mode .pg { cursor: grab; }
+.pages-mode .pg:active { cursor: grabbing; }
+.pages-mode .pg.on::after { opacity: 1; }
+.pages-mode .pg.lifted { z-index: 5; box-shadow: var(--glass-shadow); }
+.pg-eye[hidden] { display: none; } .pg-eye { display: inline-flex; font-style: normal; }
+.add-tile { display: none; flex: none; box-sizing: border-box; padding: 8px; border: 1.5px dashed color-mix(in srgb, var(--text) 28%, transparent); border-radius: 5px; transition: border-color var(--t-1) var(--e-out); }
+.pages-mode .add-tile { display: flex; width: calc(var(--tile-w, 248) * 1px); height: calc(var(--tile-h, 140) * 1px); }
+.add-tile:hover { border-color: color-mix(in srgb, var(--text) 46%, transparent); }
+.add-blank { flex: 1; min-height: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; border-radius: 4px; font-size: 13px; line-height: 1; color: var(--body); transition: background-color var(--t-1) var(--e-out), color var(--t-1) var(--e-out); }
+.add-blank:hover { background: var(--glass-hover); color: var(--text); }
+
+/* the motion panel */
+.side { overflow-y: auto; scrollbar-width: thin; }
+.side-wide { width: 100%; justify-content: center; }
+.side-body > .ax-pick:first-child { margin-bottom: 2px; }
+.ax-holder { display: block; }
+.ax-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 2px 8px; margin-bottom: 8px; }
+.ax-head .side-label { margin: 0; }
+.ax-apply { flex: none; padding: 0; font-size: 12px; line-height: 1.3; color: var(--muted); opacity: 0; pointer-events: none; transition: opacity var(--t-1) var(--e-out), color var(--t-1) var(--e-out); }
+.ax-apply.on { opacity: 1; pointer-events: auto; }
+.ax-apply:hover { color: var(--text); }
+#animPreview { margin-top: 2px; }
+.ax-box > * + * { margin-top: 0; }
+.ax-fold { display: block; }
+.ax-fold[hidden] { display: none; }
+.ax-in { padding-top: 14px; }
+.ax-box > .ax-fold:first-child .ax-in { padding-top: 0; }
+.ax-box:empty { display: none; }
+.seg.ax-pick { display: grid; grid-template-columns: repeat(var(--c), minmax(0, 1fr)); }
+.seg.ax-pick .sg { min-width: 0; padding: 0 2px; white-space: nowrap; }
+.seg.ax-pick .sg:disabled { color: color-mix(in srgb, var(--text) 34%, transparent); pointer-events: none; }
+.seg.ax-pick.rows { border-radius: 16px; }
+.seg.ax-pick .pl { top: 0; left: 0; }
+.seg.ax-pick.rows .pl { border-radius: 14px; }
+.notes-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin: 0 0 10px; }
+.notes-head h3 { margin: 0; }
+.notes-page { font-size: 12px; line-height: 1.2; color: var(--muted); font-variant-numeric: tabular-nums; }
+.notes-pad { display: block; }
+.notes-in { display: block; box-sizing: border-box; width: 100%; min-height: 56px; max-height: min(52vh, 460px); padding: 0 0 8px; border: 0; border-bottom: 1px solid var(--glass-edge); border-radius: 0; outline: 0; resize: none; overflow: hidden; background: transparent; color: var(--text); font: inherit; font-size: 14px; line-height: 1.7; caret-color: var(--accent); user-select: text; scrollbar-width: thin; scrollbar-color: var(--tool) transparent; transition: border-color var(--t-1) var(--e-out), height var(--t-2) var(--e-out); }
+.notes-in:hover { border-bottom-color: color-mix(in srgb, var(--text) 28%, transparent); }
+.notes-in:focus { border-bottom-color: var(--text); }
+.notes-meta { height: 15px; margin: 8px 0 0; font-size: 12px; line-height: 15px; color: var(--muted); font-variant-numeric: tabular-nums; opacity: 0; transition: opacity var(--t-2) var(--e-out); }
+.notes-meta.on { opacity: 1; }
+.notes-in::placeholder { color: var(--muted); }
+.step-list { position: relative; display: grid; gap: 2px; }
+.list-pl { position: absolute; left: 0; right: 0; top: 0; border-radius: 7px; background: var(--text); opacity: 0; pointer-events: none; transition: transform var(--t-3) var(--e-out), height var(--t-3) var(--e-out), opacity var(--t-1) var(--e-out); }
+.step-row { display: flex; align-items: center; gap: 8px; width: 100%; height: 32px; padding: 0 6px; border-radius: 7px; font-size: 13px; color: var(--text); text-align: left; transition: background-color var(--t-1) var(--e-out); }
+.step-row { position: relative; z-index: 1; transition: color var(--t-2) var(--e-out), background-color var(--t-1) var(--e-out); }
+.step-row:hover { background: var(--glass-hover); }
+.step-row[aria-pressed="true"], .step-row[aria-pressed="true"]:hover { background: transparent; color: var(--bg); }
+.step-no { flex: none; width: 16px; text-align: center; font-size: 12px; font-variant-numeric: tabular-nums; opacity: .7; }
+.step-n { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.step-mv { flex: none; display: grid; opacity: 0; transition: opacity var(--t-1) var(--e-out), background-color var(--t-1) var(--e-out); width: 22px; height: 22px; place-items: center; border-radius: 4px; font-style: normal; }
+.step-mv svg.i { width: 18px; height: 18px; }
+.step-row:hover .step-mv { opacity: 1; }
+.step-row.no-mv .step-mv { display: none; }
+.step-mv:hover { background: color-mix(in srgb, currentColor 16%, transparent); }
+
+/* facts: the information panel's rows */
+.info-list { display: grid; margin: 0; }
+.info-list div { display: flex; justify-content: space-between; gap: 16px; padding: 8px 0; border-top: 1px solid var(--glass-edge); font-size: 12px; line-height: 1.4; }
+.info-list div:first-child { border-top: 0; padding-top: 0; }
+.info-list dt { flex: none; color: var(--muted); }
+.info-list dd { margin: 0; min-width: 0; text-align: right; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
+/* the dock and its arrows. The family's .pill stands alone; here it sits in the row, between the arrows */
+.dock-row { position: absolute; z-index: 6; left: 50%; bottom: max(16px, env(safe-area-inset-bottom, 0px)); display: flex; align-items: center; gap: 8px; max-width: calc(100% - 24px); transform: translateX(-50%); transition: left var(--t-3) var(--e-out); }
+.pic-nav.tb { flex: none; width: 54px; height: 54px; padding: 0; border-radius: 16px; background: var(--glass-float); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-edge); box-shadow: var(--glass-shadow); box-sizing: border-box; color: var(--body); }
+.pic-nav.tb:hover { background: color-mix(in srgb, var(--text) 10%, var(--glass-float)); color: var(--text); }
+.pic-nav[data-tip]::after { top: auto; bottom: calc(100% + 10px); transform: translate(-50%, 3px); }
+.pic-nav[data-tip]:hover::after { transform: translate(-50%, 0); }
+.dock-row .pill { position: relative; left: auto; bottom: auto; max-width: none; transform: none; }
+.pic-nav.tb:disabled { color: color-mix(in srgb, var(--text) 34%, transparent); pointer-events: none; }
+
+/* the dock */
+.dock-row { left: calc(50% - (var(--pad-r) + var(--gut)) / 2); align-items: flex-end; }
+.pill { flex: none; flex-direction: column; align-items: stretch; }
+.pill-row { display: flex; align-items: center; gap: 2px; min-width: 0; height: 40px; }
+.page-no { min-width: 64px; font-size: 13px; font-weight: 400; font-variant-numeric: tabular-nums; }
+.page-in { flex: none; width: 64px; height: 40px; }
+.page-in input { text-align: center; font-variant-numeric: tabular-nums; }
+.page-in[hidden], .page-no[hidden] { display: none; }
+.pill #playBtn { gap: 7px; padding: 0 14px 0 12px; font-size: 13px; font-weight: 400; width: auto; }
+
+/* the panel */
+.side.right { right: max(16px, env(safe-area-inset-right, 0px)); }
+.side-note { margin: 0; font-size: 12px; line-height: 1.5; color: var(--muted); }
+.notes-text { display: grid; gap: 8px; font-size: 13px; line-height: 1.6; color: var(--text); user-select: text; }
+.notes-text p { margin: 0; }
+.font-list { display: grid; gap: 6px; }
+.font-row { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; font-size: 13px; line-height: 1.3; color: var(--text); }
+.font-n { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.font-m { flex: none; font-size: 12px; color: var(--muted); }
+
+/* the card */
+.dlg .seg .sg { min-width: 0; }
+.dlg .sv-rows { display: grid; gap: 14px; }
+.dlg .sv-rows > :first-child { margin-top: 16px; }
+.dlg .field { margin-bottom: 16px; }
+.chips.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+
+/* the show: the slide's room is dark. The dock is the same glass, and it leaves when you don't need it */
+.show { position: fixed; inset: 0; z-index: 90; display: none; background: #000; overflow: hidden; outline: 0; transition: background-color var(--t-3) var(--e-out); }
+.show.on { display: block; }
+.show-main { position: absolute; inset: 0; overflow: hidden; }
+.show-hold { position: absolute; inset: 0; }
+.closing .show-main, .closing .show-hold, .show.closing { overflow: visible; }
+.closing .hud, .closing .show-veil, .closing .show-end { display: none; }
+.show-veil { position: absolute; inset: 0; opacity: 0; pointer-events: none; transition: opacity var(--t-2) var(--e-out), background-color var(--t-2) var(--e-out); }
+.show-veil.on { opacity: 1; pointer-events: auto; }
+.show-veil.black { background: #000; }
+.show-veil.white { background: #fff; }
+.show-end { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: #000; color: color-mix(in srgb, #fff 62%, transparent); font-size: 13px; opacity: 0; pointer-events: none; transition: opacity var(--t-2) var(--e-out); }
+.show-end.on { opacity: 1; pointer-events: auto; }
+@keyframes show-in { from { opacity: 0; } }
+.show.idle, .show.idle .show-main { cursor: none; }
+.show.lasering, .show.lasering .show-main, .show.lasering .x-link { cursor: none; }
+.hud { position: absolute; left: 50%; bottom: 16px; transform: translateX(-50%); transition: opacity var(--t-2) var(--e-out), transform var(--t-2) var(--e-out); }
+.show.idle .hud { opacity: 0; pointer-events: none; transform: translate(-50%, 8px); }
+.hud-no { min-width: 64px; text-align: center; font-size: 13px; line-height: 1; color: var(--text); font-variant-numeric: tabular-nums; }
+.hud .tb[aria-pressed="true"] { background: var(--text); color: var(--bg); }
+.laser { position: absolute; left: -7px; top: -7px; width: 14px; height: 14px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 5px color-mix(in srgb, var(--accent) 32%, transparent), 0 0 18px 6px color-mix(in srgb, var(--accent) 34%, transparent); opacity: 0; pointer-events: none; z-index: 3; transition: opacity var(--t-1) var(--e-out); }
+
+/* the presenter's own view: the family's page, not the audience's */
+.show.pview { background: var(--bg); }
+.pview .show-main { left: 24px; top: 24px; right: calc(max(320px, 32vw) + 48px); bottom: 80px; overflow: hidden; }
+.pview .show-hold > .slide { box-shadow: 0 1px 2px color-mix(in srgb, #000 12%, transparent), 0 2px 18px color-mix(in srgb, #000 10%, transparent); }
+.pview .show-main { overflow: visible; }
+.pv-side { display: none; position: absolute; right: 24px; top: 24px; bottom: 80px; width: max(320px, 32vw); flex-direction: column; }
+.pview .pv-side { display: flex; }
+.pview .show-end { background: var(--bg); color: var(--muted); }
+.pv-time { flex: none; display: flex; align-items: center; gap: 10px; height: 40px; margin-bottom: 18px; }
+.pv-clock { font-family: var(--font-display); font-size: 24px; font-weight: 600; line-height: 1; color: var(--text); font-variant-numeric: tabular-nums; }
+.pv-now { font-size: 13px; line-height: 1; color: var(--muted); font-variant-numeric: tabular-nums; }
+.pv-side .pages-gap { flex: 1; }
+.pv-side .btn { flex: none; white-space: nowrap; }
+.pv-next { position: relative; flex: none; height: calc(max(320px, 32vw) * .5); margin-bottom: 18px; }
+.pv-paper { position: relative; overflow: hidden; background: #fff; box-shadow: 0 1px 2px color-mix(in srgb, #000 12%, transparent), 0 2px 18px color-mix(in srgb, #000 10%, transparent); }
+.pv-notes { flex: 1; min-height: 0; overflow: auto; display: grid; align-content: start; gap: 10px; font-size: 17px; line-height: 1.6; color: var(--text); scrollbar-width: thin; }
+.pv-notes p { margin: 0; }
+.pv-notes .pv-empty { font-size: 13px; color: var(--muted); }
+
+/* words on glass */
+.chrome, .side, .set, .dlg, .pop, .pill, .pic-nav, .ask, .toast, .cfind { --muted: color-mix(in srgb, var(--text) 74%, var(--bg)); }
+.set-tab, .card, .opt, .chip, .lic-back, .tb, .f-b { color: var(--body); }
+
+@media (max-width: 720px) {
+  .meta .count { display: none; }
+  .dock-row { left: 50%; max-width: calc(100% - 16px); }
+  .pill [data-tip]::after { display: none; }
+  .pic-nav { display: none !important; }
+  .pview .show-main { right: 24px; bottom: 46%; }
+  .pv-side { left: 24px; right: 24px; top: 56%; width: auto; }
+  .pv-next, .pv-side .side-label:first-of-type { display: none; }
+}
+@media (max-width: 640px) {
+  .meta .lab { max-width: 0; opacity: 0; margin-left: -5px; }
+  .meta [data-tip]::after { display: none; }
+  .side.right { top: auto; left: max(8px, env(safe-area-inset-left, 0px)); right: max(8px, env(safe-area-inset-right, 0px)); bottom: calc(max(8px, env(safe-area-inset-bottom, 0px)) + 62px); width: auto; max-height: 50%; transform: translateY(10px); }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+
+/* a file that's only read (pptm): what would change it can't be pressed. The family's 34% */
+.locked .add-tile { display: none !important; }
+.locked .slide .x-top { cursor: default; }
+.add-blank:disabled, .seg.ax-pick .sg:disabled, .ax-apply:disabled { color: color-mix(in srgb, var(--text) 34%, transparent); pointer-events: none; }
+.notes-in:read-only { cursor: default; }
+
+/* a PDF: only the chosen slides, one to a sheet the slide's own size (WebView2 prints the page as it's laid out here) */
+.print-deck { display: none; }
+@media print {
+  @page { margin: 0; }
+  html, body { height: auto !important; overflow: visible !important; background: #fff !important; }
+  body > :not(.print-deck) { display: none !important; }
+  .print-deck { display: block; }
+  .print-sheet { position: relative; overflow: hidden; width: var(--pw); height: calc(var(--ph) - 1px); break-after: page; }
+  .print-sheet:last-child { break-after: auto; }
+  .print-sheet > .slide { position: absolute; left: 0; top: 0; }
+  .print-deck .x-hint, .print-deck .x-play { display: none !important; }
+}
+
+/* a notice row makes the top bar taller: the slide and the panels move down with it */
+.side { top: calc(var(--chrome-now, 53px) + 10px); max-height: calc(100% - var(--chrome-now, 53px) - 88px); }

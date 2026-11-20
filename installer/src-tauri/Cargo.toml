@@ -1,0 +1,58 @@
+[package]
+name = "dotany-setup"
+version = "1.0.0"
+edition = "2021"
+rust-version = "1.80"
+publish = false
+default-run = "dotany-setup"
+description = "DotAny's installer: one program that carries the whole family"
+
+[lib]
+name = "dotany_setup"
+crate-type = ["rlib"]
+
+# the installer; the payload is appended to it by dotany-pack
+[[bin]]
+name = "dotany-setup"
+path = "src/main.rs"
+
+# reads payload.json, measures the built programs, and writes DotAny-Setup.exe
+[[bin]]
+name = "dotany-pack"
+path = "src/bin/pack.rs"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[features]
+default = ["custom-protocol"]
+# the page is built into the program, as `tauri build` would do it
+custom-protocol = ["tauri/custom-protocol"]
+
+[dependencies]
+tauri = { version = "2", features = [] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+zstd = { version = "0.13", features = ["zstdmt"] }
+sha2 = "0.10"
+winreg = "0.55"
+mslnk = "0.1"
+rfd = { version = "0.15", default-features = false, features = ["common-controls-v6"] }
+windows-sys = { version = "0.59", features = [
+  "Win32_Foundation",
+  "Win32_Graphics_Gdi",
+  "Win32_Storage_FileSystem",
+  "Win32_System_Console",
+  "Win32_System_Diagnostics_ToolHelp",
+  "Win32_System_Registry",
+  "Win32_System_Threading",
+  "Win32_UI_Shell",
+  "Win32_UI_WindowsAndMessaging",
+] }
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "s"
+panic = "unwind"
+strip = true

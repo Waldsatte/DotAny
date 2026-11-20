@@ -1,0 +1,78 @@
+[package]
+name = "dotany-audio"
+version = "1.0.0"
+edition = "2021"
+rust-version = "1.87"
+publish = false
+
+[lib]
+name = "dotany_audio_lib"
+crate-type = ["rlib"]
+
+[[bin]]
+name = "dotany-audio"
+path = "src/main.rs"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+# the family's part: the window, atomic saves, settings and recent files, the watcher, fonts and the platform layer
+dotany-base = { path = "../../shared/rust" }
+# the cover's open dialog
+rfd = { version = "0.15", default-features = false, features = ["common-controls-v6"] }
+# what a file is, the old sounds, tracker modules (libopenmpt), each format's writer (MP3 by LAME, FLAC by libFLAC, through
+# dotany-sound-encode), sample rates and tags: shared with Recorder (the two encoders) and the hub's converter
+dotany-sound = { path = "../../shared/sound" }
+# Reading audio: only these. default-features stay off, so AAC, ALAC, Opus, MP1, MP2, ADPCM, MKV, CAF and MP4 are not compiled in.
+# scripts/check-deps.mjs fails the build otherwise.
+symphonia = { version = "0.6", default-features = false, features = ["mp3", "flac", "ogg", "vorbis", "pcm", "wav", "aiff"] }
+lofty = "0.25"
+realfft = "3"
+cpal = "0.18"
+rtrb = "0.3"
+memmap2 = "0.9"
+
+# only the platform module uses these: Media Foundation's interfaces, which decode M4A: Windows' decoder, not ours.
+# Its functions are looked up at run time, so nothing here links to Media Foundation.
+[target.'cfg(windows)'.dependencies]
+windows = { version = "0.62", features = ["Win32_Media_MediaFoundation", "Win32_System_Com"] }
+windows-sys = { version = "0.59", features = ["Win32_Foundation", "Win32_System_LibraryLoader"] }
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "s"
+panic = "unwind"
+strip = true
+
+# sound is all arithmetic: the code that touches samples is built for speed, everything else for size
+[profile.release.package.dotany-audio]
+opt-level = 3
+[profile.release.package.dotany-sound]
+opt-level = 3
+[profile.release.package.dotany-sound-encode]
+opt-level = 3
+[profile.release.package.symphonia-core]
+opt-level = 3
+[profile.release.package.symphonia-bundle-mp3]
+opt-level = 3
+[profile.release.package.symphonia-bundle-flac]
+opt-level = 3
+[profile.release.package.symphonia-codec-vorbis]
+opt-level = 3
+[profile.release.package.symphonia-codec-pcm]
+opt-level = 3
+[profile.release.package.symphonia-format-ogg]
+opt-level = 3
+[profile.release.package.symphonia-format-riff]
+opt-level = 3
+[profile.release.package.rubato]
+opt-level = 3
+[profile.release.package.rustfft]
+opt-level = 3
+[profile.release.package.realfft]
+opt-level = 3

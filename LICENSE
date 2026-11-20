@@ -1,0 +1,50 @@
+MIT License
+
+Copyright (c) 2026 The DotAny authors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+--------------------------------------------------------------------------------
+Exceptions
+
+- books/ (DotAny Books) is licensed under the GNU General Public License,
+  version 3 or (at your option) any later version: see books/LICENSE. It contains
+  DjVu.js (GPL-2.0-or-later), which requires this. The MIT code in shared/ that
+  Books is built from stays MIT in its own files; the Books program as a whole is
+  GPL.
+- Fonts keep their own licences, which are not MIT, and each licence text sits
+  beside its font:
+  - shared/fonts/: Stack Sans Text and Headline, Noto Sans JP DotAny (Noto Sans
+    JP cut to the common kanji and renamed) and Pretendard, under the SIL Open
+    Font License 1.1; HarmonyOS Sans SC and TC, under Huawei's HarmonyOS Sans
+    Fonts License Agreement (LICENSE-HarmonyOS-Sans.txt), which allows them to
+    be redistributed unmodified with software, not on their own.
+  - books/fonts/: Noto Serif SC, SIL OFL 1.1.
+  - text/fonts/: JetBrains Mono, SIL OFL 1.1; Unscii 16, public domain.
+- Third-party code keeps its own licence. Each program lists every library it
+  contains, with its licence text, on its Licenses & Credits page. The C and
+  JavaScript code kept in this repository carries its licence in its folder:
+  LAME 3.100 (LGPL-2.0, shared/sound-encode/vendor/lame-3.100), libFLAC
+  (BSD-3-Clause, shared/sound-encode/vendor/flac), libopenmpt (BSD-3-Clause,
+  shared/sound/vendor/libopenmpt), libarchive (BSD-2-Clause,
+  shared/unpack/vendor/libarchive) and DjVu.js (books/vendor/djvujs). LAME is
+  built as a library of its own, libmp3lame.dll on Windows and
+  libmp3lame.dylib on the Mac, which the programs load when they run, so it can
+  be replaced with one built from its source. The crates under the MPL-2.0 are
+  used as published on crates.io, where their source is.
